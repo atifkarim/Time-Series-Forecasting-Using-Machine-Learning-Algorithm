@@ -1,0 +1,6 @@
+In this folder want to predict the input or output of Turbine 9
+input = AEDAHO_T9_V2 = 80 bar
+output = AEWIHO_T9AV2 = cold wind
+
+But before doing it I will choose those ROWS where Blast Furnace B's value = 100
+Blast Furnace B's Signal name for turbine T9 is DEWIHOBT9_I0
