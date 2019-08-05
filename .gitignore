@@ -5,3 +5,5 @@ model_22.pkl
 AirPassengers.csv
 AirQualityUCI
 univariate_data_for_prediction/figure_from_code
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
