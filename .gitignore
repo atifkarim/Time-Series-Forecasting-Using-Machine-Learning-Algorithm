@@ -8,3 +8,4 @@ univariate_data_for_prediction/figure_from_code
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 change_column.ipynb
+data_prediction_of_PowerPlant/__pycache__
