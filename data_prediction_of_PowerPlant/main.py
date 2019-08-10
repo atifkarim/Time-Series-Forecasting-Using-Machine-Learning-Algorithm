@@ -11,6 +11,11 @@ from dataset_analysis import alter_time
 from dataset_analysis import rearrange_frame
 from dataset_analysis import drop_zero_value_row_of_blast_furnace_signal
 from dataset_analysis import drop_zero_value_row_of_target_signal
+from dataset_analysis import drop_column_with_same_value
+from dataset_analysis import drop_nan_value
+from dataset_analysis import drop_row
+from dataset_analysis import drop_string_column
+from dataset_analysis import feature_selection_with_selectKbest
 
 
 
@@ -43,3 +48,26 @@ dataframe_no_zero_value_blast_furnace = drop_zero_value_row_of_blast_furnace_sig
 
 
 # Checking target column's value. If ZERO drop the row.
+target_signal = 'AEWIHO_T9AV2'
+dataframe_reset = dataframe_no_zero_value_blast_furnace.reset_index()
+dataframe_no_zero_value_target_column = drop_zero_value_row_of_target_signal(dataframe_reset,target_signal)
+
+
+# Drop the column which has sam evalue in every ROW
+dataframe_drop_column_with_same_value = drop_column_with_same_value(dataframe_no_zero_value_target_column)
+
+# Drop the ROW which has NAN value
+multivariate_data_drop_nan = drop_nan_value(dataframe_drop_column_with_same_value)
+
+
+# Drop the row who has consecutive same value
+dataframe_drop_row_consecutive_same_value = drop_row(multivariate_data_drop_nan)
+
+# Drop the column who has 'objet' type value
+dataframe_no_string = drop_string_column(dataframe_drop_row_consecutive_same_value)
+
+dataframe_datetime = dataframe_no_string.set_index('dateTime')
+
+
+# Feature selection with Sklearn feature best technique
+
