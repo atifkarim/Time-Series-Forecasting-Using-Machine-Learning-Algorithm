@@ -106,27 +106,9 @@ def drop_zero_value_row_of_blast_furnace_signal(dataframe, blast_furnace_signal)
         dataframe_1 = dataframe
     dataframe_1 = dataframe_1.drop([blast_furnace_signal], axis=1) # dropping the column. because all value are same   
     return dataframe_1
-blast_furnace_signal = 'DEWIHOBT9_I0'
-
-dataframe_no_zero_value_blast_furnace = drop_zero_value_row_of_blast_furnace_signal(rearranged_dataframe,blast_furnace_signal)
-
-
-# In[ ]:
-
-
-dataframe_no_zero_value_blast_furnace.head()
-
-
-# In[ ]:
-
-
-print(rearranged_dataframe.shape)
-print(dataframe_no_zero_value_blast_furnace.shape)
-
 
 # # Now choose the target colum  and check if any value is zero or not. If zero then drop those rows. here taret column is T9's output, signal name is AEWIHO_T9AV2
 
-# In[ ]:
 
 
 def drop_zero_value_row_of_target_signal(dataframe, target_signal):
@@ -149,29 +131,6 @@ def drop_zero_value_row_of_target_signal(dataframe, target_signal):
     return dataframe_1
 
 
-target_signal = 'AEWIHO_T9AV2'
-dataframe_reset = dataframe_no_zero_value_blast_furnace.reset_index()
-dataframe_no_zero_value_target_column = drop_zero_value_row_of_target_signal(dataframe_reset,target_signal)
-
-
-# In[ ]:
-
-
-dataframe_no_zero_value_target_column.head()
-
-
-# In[ ]:
-
-
-print(dataframe_no_zero_value_blast_furnace.shape)
-print(dataframe_no_zero_value_target_column.shape)
-
-
-# # Now drop all columns whose all vaues are same
-
-# In[ ]:
-
-
 def drop_column_with_same_value(dataframe):
     cols = dataframe.select_dtypes([np.number]).columns
     diff = dataframe[cols].diff().sum()
@@ -179,27 +138,7 @@ def drop_column_with_same_value(dataframe):
     
     return dataframe_drop_column_with_same_value
 
-dataframe_drop_column_with_same_value = drop_column_with_same_value(dataframe_no_zero_value_target_column)
-
-
-# In[ ]:
-
-
-dataframe_drop_column_with_same_value.head()
-
-
-# In[ ]:
-
-
-print(dataframe_no_zero_value_target_column.shape)
-print(dataframe_drop_column_with_same_value.shape)
-
-
 # # check on the whole dataframe if there is any NAN value or not. If YES, replace it with zero and drop
-
-# In[ ]:
-
-
 # Think twice before using this function
 # checking if any column has nan value or not. If YES then replace nan with zero and drop the row
 
@@ -219,72 +158,21 @@ def drop_nan_value(dataframe):
             
     return dataframe_1
 
-multivariate_data_drop_nan = drop_nan_value(dataframe_drop_column_with_same_value)
-
-
-# In[ ]:
-
-
-multivariate_data_drop_nan.head()
-
-
-# In[ ]:
-
-
 def drop_row(dataframe):
     
     for i in dataframe:
-        print(i)
+#        print(i)
         dataframe_drop_row_consecutive_same_value = dataframe.loc[dataframe[i].shift() != dataframe[i]]
     
     return dataframe_drop_row_consecutive_same_value
-
-dataframe_drop_row_consecutive_same_value = drop_row(multivariate_data_drop_nan)
-
-
-# In[ ]:
-
 
 def drop_string_column(dataframe):
     drop_object = dataframe.select_dtypes(exclude=['object'])
     
     return drop_object
 
-dataframe_no_string = drop_string_column(dataframe_drop_row_consecutive_same_value)
-
-
-# In[ ]:
-
-
-print(multivariate_data_drop_nan.shape)
-print(dataframe_drop_row_consecutive_same_value.shape)
-print(dataframe_no_string.shape)
-
 
 # # All data cleaning process has done. Now feature selection process will come. Before doing this just make a copy of dataframe and set the index as dateTime
-
-# In[ ]:
-
-
-dataframe_copy = dataframe_no_string.copy()
-
-
-# In[ ]:
-
-
-dataframe_datetime = dataframe_copy.set_index('dateTime')
-
-
-# In[ ]:
-
-
-print(dataframe_copy.shape)
-print(dataframe_datetime.shape)
-
-
-# # Sklearn feature selection function
-
-# In[ ]:
 
 
 def feature_selection_with_selectKbest(dataframe,max_best_number):
@@ -315,28 +203,9 @@ def feature_selection_with_selectKbest(dataframe,max_best_number):
     final_dataframe = dataframe.iloc[:][e]
     
     return final_dataframe
-max_best_number = 20
-sklearn_feature_best_dataframe = feature_selection_with_selectKbest(dataframe_datetime,max_best_number)
-sklearn_feature_best_dataframe.head()
-
-
-# In[ ]:
-
-
-print(dataframe_datetime.shape)
-print(sklearn_feature_best_dataframe.shape)
-
-
-# In[ ]:
-
-
-# dataframe_datetime['DEHGF_CHYPI2']
 
 
 # # feature selection with correlation
-
-# In[ ]:
-
 
 # find correlated matrix for dataframe which came from sklearn feature selection and the datafarem which has passed
 # to sklearn feature selection function
@@ -346,15 +215,7 @@ def pearson_correlation(sklearn_dataframe, main_dataframe):
     main_correlation = main_dataframe.corr()
     return sklearn_correlation, main_correlation
 
-sklearn_correlation, main_correlation = pearson_correlation(sklearn_feature_best_dataframe, dataframe_datetime)
-print(sklearn_correlation.shape)
-print(main_correlation.shape)
-
-
 # # use the correlation matrix to make the new dataframe where the feature will be the column who has a correlation value with the target in a given range. 
-
-# In[ ]:
-
 
 # function to make dataframe with high correlated valued column
 def make_dataframe_with_high_correlated_value(main_dataframe,correlated_dataframe,
@@ -379,169 +240,140 @@ def make_dataframe_with_high_correlated_value(main_dataframe,correlated_datafram
     
     return new_dataframe
 
-correlation_threshold_value = 0.5
-max_value = 0.9
-# target_column = dataframe_datetime.columns[-1] # here declaring who is target column.
 
 
-main_frame = dataframe_datetime
-correlated_frame = main_correlation
 
-# main_frame = sklearn_feature_best_dataframe
-# correlated_frame = sklearn_correlation
 
-dataframe_high_correlation = make_dataframe_with_high_correlated_value(main_frame,correlated_frame,
-                                                             correlation_threshold_value,max_value)
-
-print('dataframe_high_correlation shape: ', dataframe_high_correlation.shape)
-print('dataframe_datetime shape: ', dataframe_datetime.shape)
-print('correlated_frame shape: ', correlated_frame.shape)
-
-
-# In[ ]:
-
-
-dataframe_high_correlation.head()
-
-
-# In[ ]:
-
-
-dataframe_datetime.iloc[0:].plot(y = dataframe_datetime.columns[-1], use_index=True)
-plt.rcParams['figure.figsize'] =(15,5)
-
-
-# # Now dataframe for weekday, weekend, daywise, shiftwise will be made
-
-# In[ ]:
-
-
-dataframe_datetime.shape
-
-
-# In[ ]:
-
-
-# new_dataframe_index_datetime = dataframe_datetime.copy()
-
-
-# In[ ]:
-
-
-df2 = pd.DataFrame(index = dataframe_datetime.index)
-
-
-# In[ ]:
-
-
-target_df2 = dataframe_datetime.loc[:,dataframe_datetime.columns[-1]]
-
-
-# In[ ]:
-
-
-type(target_df2)
-
-
-# In[ ]:
-
-
-# df3 = pd.concat([df2, target_df2], axis=1)
-
-
-# In[ ]:
-
-
-# df3.shape
-
-
-# In[ ]:
-
-
-df2.shape
-
-
-# In[ ]:
-
-
-df2['dateTime_column'] =  pd.to_datetime(dataframe_datetime.index, format='%Y-%m-%d %H:%M')
-
-
-# In[ ]:
-
-
-df2.head()
-
-
-# In[ ]:
-
-
-# checking type of the contect of the column
-s = df2['dateTime_column'].dtype
-print(s)
-
-# checking column type
-t = df2.dateTime_column
-print(type(t))
-
-
-# In[ ]:
-
-
-df2.shape
-
-
-# In[ ]:
-
-
-# df2['Date'] = df2[df2.index].dt.strftime('%d/%m/%Y')
-# df2['Time'] = df2[df2.index].dt.strftime('%H:%M:%S')
-
-
-# In[ ]:
-
-
-# it will return a column with weekday name
-df2['Weekday_name'] = df2.index.weekday_name
-
-
-# In[ ]:
-
-
-df2['TypeofDAY'] = np.where(df2['dateTime_column'].dt.dayofweek < 5, 'Weekday', 'Weekend') # if the associated number less than 5 then weekend, otherwise weekday
-df2['TypeofDAY_number'] = np.where(df2['dateTime_column'].dt.dayofweek < 5, 1, 0) # 1 for weekday, 0 for weekend
-
-
-# In[ ]:
-
-
-df2['Date'] = df2['dateTime_column'].dt.strftime('%Y-%m-%d')
-# df2['Date'] = pd.to_datetime(df2['Date'])
-
-
-# In[ ]:
-
-
-df2.head()
-
-
-# In[ ]:
-
-
-dict_of_dates = {k: v for k, v in df2.groupby('Date')}
-dict_of_day_type = {k:v for k,v in df2.groupby('TypeofDAY')}
-
-
-# In[ ]:
-
-
-date_key_value = collections.OrderedDict(dict_of_dates)
-day_type_key_value = collections.OrderedDict(dict_of_day_type)
-
-
-# In[ ]:
-
-
-for i in day_type_key_value:
-    print(i)
-
+    # # Now dataframe for weekday, weekend, daywise, shiftwise will be made
+    
+    # In[ ]:
+    
+    
+    
+    
+    # In[ ]:
+    
+    
+    # new_dataframe_index_datetime = dataframe_datetime.copy()
+    
+    
+    # In[ ]:
+    
+    
+    df2 = pd.DataFrame(index = dataframe_datetime.index)
+    
+    
+    # In[ ]:
+    
+    
+    target_df2 = dataframe_datetime.loc[:,dataframe_datetime.columns[-1]]
+    
+    
+    # In[ ]:
+    
+    
+    type(target_df2)
+    
+    
+    # In[ ]:
+    
+    
+    # df3 = pd.concat([df2, target_df2], axis=1)
+    
+    
+    # In[ ]:
+    
+    
+    # df3.shape
+    
+    
+    # In[ ]:
+    
+    
+    df2.shape
+    
+    
+    # In[ ]:
+    
+    
+    df2['dateTime_column'] =  pd.to_datetime(dataframe_datetime.index, format='%Y-%m-%d %H:%M')
+    
+    
+    # In[ ]:
+    
+    
+    df2.head()
+    
+    
+    # In[ ]:
+    
+    
+    # checking type of the contect of the column
+    s = df2['dateTime_column'].dtype
+    print(s)
+    
+    # checking column type
+    t = df2.dateTime_column
+    print(type(t))
+    
+    
+    # In[ ]:
+    
+    
+    df2.shape
+    
+    
+    # In[ ]:
+    
+    
+    # df2['Date'] = df2[df2.index].dt.strftime('%d/%m/%Y')
+    # df2['Time'] = df2[df2.index].dt.strftime('%H:%M:%S')
+    
+    
+    # In[ ]:
+    
+    
+    # it will return a column with weekday name
+    df2['Weekday_name'] = df2.index.weekday_name
+    
+    
+    # In[ ]:
+    
+    
+    df2['TypeofDAY'] = np.where(df2['dateTime_column'].dt.dayofweek < 5, 'Weekday', 'Weekend') # if the associated number less than 5 then weekend, otherwise weekday
+    df2['TypeofDAY_number'] = np.where(df2['dateTime_column'].dt.dayofweek < 5, 1, 0) # 1 for weekday, 0 for weekend
+    
+    
+    # In[ ]:
+    
+    
+    df2['Date'] = df2['dateTime_column'].dt.strftime('%Y-%m-%d')
+    # df2['Date'] = pd.to_datetime(df2['Date'])
+    
+    
+    # In[ ]:
+    
+    
+    df2.head()
+    
+    
+    # In[ ]:
+    
+    
+    dict_of_dates = {k: v for k, v in df2.groupby('Date')}
+    dict_of_day_type = {k:v for k,v in df2.groupby('TypeofDAY')}
+    
+    
+    # In[ ]:
+    
+    
+    date_key_value = collections.OrderedDict(dict_of_dates)
+    day_type_key_value = collections.OrderedDict(dict_of_day_type)
+    
+    
+    # In[ ]:
+    
+    
+    for i in day_type_key_value:
+        print(i)
+    

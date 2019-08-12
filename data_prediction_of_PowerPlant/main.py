@@ -16,6 +16,8 @@ from dataset_analysis import drop_nan_value
 from dataset_analysis import drop_row
 from dataset_analysis import drop_string_column
 from dataset_analysis import feature_selection_with_selectKbest
+from dataset_analysis import pearson_correlation
+from dataset_analysis import make_dataframe_with_high_correlated_value
 
 
 
@@ -66,8 +68,28 @@ dataframe_drop_row_consecutive_same_value = drop_row(multivariate_data_drop_nan)
 # Drop the column who has 'objet' type value
 dataframe_no_string = drop_string_column(dataframe_drop_row_consecutive_same_value)
 
+
+# Make dataframe with dateTime index
 dataframe_datetime = dataframe_no_string.set_index('dateTime')
 
 
 # Feature selection with Sklearn feature best technique
+max_best_number = 20
+sklearn_feature_best_dataframe = feature_selection_with_selectKbest(dataframe_datetime,max_best_number)
 
+# feature selection with Pearson Correlation.
+
+sklearn_correlation, main_correlation = pearson_correlation(sklearn_feature_best_dataframe, dataframe_datetime)
+
+# make a dataframe with signal who is lies between a given range of correlation threshold value
+correlation_threshold_value = 0.5
+max_value = 0.9
+
+main_frame = dataframe_datetime
+correlated_frame = main_correlation
+
+# main_frame = sklearn_feature_best_dataframe
+# correlated_frame = sklearn_correlation
+
+dataframe_high_correlation = make_dataframe_with_high_correlated_value(main_frame,correlated_frame,
+                                                             correlation_threshold_value,max_value)
