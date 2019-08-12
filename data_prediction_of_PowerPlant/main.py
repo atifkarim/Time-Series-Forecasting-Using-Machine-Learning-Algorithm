@@ -19,9 +19,21 @@ from dataset_analysis import feature_selection_with_selectKbest
 from dataset_analysis import pearson_correlation
 from dataset_analysis import make_dataframe_with_high_correlated_value
 
+import json
 
+with open('variable_config.json', 'r') as f:
+    config = json.load(f)
 
-filepath = 'E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv'
+filepath = config['DEFAULT']['file_path']
+start_pos = config['DEFAULT']['start_point_dataframe']
+end_pos = config['DEFAULT']['end_point_dataframe']
+date_column = config['DEFAULT']['date_column']
+target_column = config['DEFAULT']['target_column']
+furnace_signal_column = config['DEFAULT']['blast_furnace_signal']
+print(type(date_column))
+print(date_column)
+
+#filepath = 'E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv'
 # reading CSV file
 initial_dataframe = create_dataframe(filepath)
 
@@ -34,25 +46,24 @@ test_new.head()
 test_new_1 = test_new.drop(['row ID'], axis = 1)
 
 # Taking define number of row from the beginning
-start_pos = 0
-end_pos = 25000
+#start_pos = 0
+#end_pos = 25000
 multivariate_data = alter_time(test_new_1, start_pos, end_pos)
 
 # Changing target column and dateTime column's position
 index_array=[0,-1]
-req_column_name = ['dateTime','AEWIHO_T9AV2']
+req_column_name = [date_column, target_column]
 rearranged_dataframe = rearrange_frame(multivariate_data,req_column_name,index_array)
 
 
 # Checking signal for blast furnace B for turbine 9. If the value is 100 keep the ROW except drop
-blast_furnace_signal = 'DEWIHOBT9_I0'
-dataframe_no_zero_value_blast_furnace = drop_zero_value_row_of_blast_furnace_signal(rearranged_dataframe,blast_furnace_signal)
+dataframe_no_zero_value_blast_furnace = drop_zero_value_row_of_blast_furnace_signal(rearranged_dataframe,furnace_signal_column)
 
 
 # Checking target column's value. If ZERO drop the row.
-target_signal = 'AEWIHO_T9AV2'
+#target_signal = 'AEWIHO_T9AV2'
 dataframe_reset = dataframe_no_zero_value_blast_furnace.reset_index()
-dataframe_no_zero_value_target_column = drop_zero_value_row_of_target_signal(dataframe_reset,target_signal)
+dataframe_no_zero_value_target_column = drop_zero_value_row_of_target_signal(dataframe_reset, target_column)
 
 
 # Drop the column which has sam evalue in every ROW

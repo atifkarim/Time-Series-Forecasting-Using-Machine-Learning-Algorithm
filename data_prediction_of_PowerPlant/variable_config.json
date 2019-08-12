@@ -1,0 +1,12 @@
+{
+  "DEFAULT":
+  {
+    "file_path": "E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv",
+    "start_point_dataframe": 0,
+    "end_point_dataframe": 25000,
+    "date_column": "dateTime",
+    "target_column" : "AEWIHO_T9AV2",
+    "blast_furnace_signal" : "DEWIHOBT9_I0",
+    "image_type": ".jpg"
+  }
+}
