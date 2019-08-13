@@ -7,6 +7,9 @@
     "date_column": "dateTime",
     "target_column" : "AEWIHO_T9AV2",
     "blast_furnace_signal" : "DEWIHOBT9_I0",
+    "max_best_number": 20,
+    "correlation_threshold_min_value": 0.5,
+    "correlation_threshold_max_value": 0.9,
     "image_type": ".jpg"
   }
 }
