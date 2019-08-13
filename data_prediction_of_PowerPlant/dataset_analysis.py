@@ -9,79 +9,81 @@ from sklearn.datasets import load_iris
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 import collections
-#get_ipython().run_line_magic('matplotlib', 'inline')
+import os
+import shutil
+# get_ipython().run_line_magic('matplotlib', 'inline')
 from matplotlib.pylab import rcParams
 
 
 # # function to read the csv file
 
 def create_dataframe(filepath):
-    test = pd.read_csv(filepath) # here the given csv file is reading
+    test = pd.read_csv(filepath)  # here the given csv file is reading
     return test
+
 
 # function for converting timestamp to unixtime and return the ready dataframe
 
 def conversion_timestamp_to_unixtime(initial_dataframe):
     ''' now conversion of timestamp to unixtime will start. In the csv file the column name of
     timestamp is longtime.'''
-    
-    longTime = initial_dataframe.loc[0:,['longTime']]
+
+    longTime = initial_dataframe.loc[0:, ['longTime']]
     longTime = longTime.as_matrix()
     a = []
     date_time_array = []
     for k in longTime:
-        a = np.append(a,k)
+        a = np.append(a, k)
     str_time = []
     correct_longtime = []
     datetime_time = []
     count = 0
-    
+
     for b in a:
-        b = int(b) # make plain integer
+        b = int(b)  # make plain integer
         str_b = str(b)
         c = str_b[-3:]
-        new_str_b = str_b.replace(c, '',1)
+        new_str_b = str_b.replace(c, '', 1)
         new_str_b_time = int(new_str_b)
         correct_longtime.append(new_str_b_time)
         now_time = datetime.datetime.fromtimestamp(new_str_b_time)
         convert_time = now_time.strftime('%Y-%m-%d %H:%M')
         str_time.append(convert_time)
-    test_new = initial_dataframe.assign(stringTime=str_time,correct_longtime=correct_longtime) # here new column in the panda dataframe for string_time has added
-    test_new['dateTime'] =  pd.to_datetime(test_new['stringTime'], format='%Y-%m-%d %H:%M')
-    test_new = test_new.drop(['longTime','stringTime','correct_longtime'], axis=1)
-    
+    test_new = initial_dataframe.assign(stringTime=str_time,
+                                        correct_longtime=correct_longtime)  # here new column in the panda dataframe for string_time has added
+    test_new['dateTime'] = pd.to_datetime(test_new['stringTime'], format='%Y-%m-%d %H:%M')
+    test_new = test_new.drop(['longTime', 'stringTime', 'correct_longtime'], axis=1)
+
     return test_new
+
 
 # # be careful here , when perform on a dataframe reset_index then a new column will appear and it is 'index'. No need of it so immediately drop it. for better view please take a look in the previous cell
 
 # # Now it's time to alter the dataframe. This will oreder the dataframe in ascending prder with respect to dateTime
 
 
-
-
-
 # here using test_new_1 as it has no row ID column and also no problematic value
 
 def alter_time(dataframe, start_pos, end_pos):
-#     multivariate_data=test_new.iloc[start_pos:end_pos][multivariate_column_label] # comment out this line if you pass column label
-    dataframe=dataframe.iloc[start_pos:end_pos][:]
-    dataframe=dataframe.loc[::-1]
-    
+    #     multivariate_data=test_new.iloc[start_pos:end_pos][multivariate_column_label] # comment out this line if you pass column label
+    dataframe = dataframe.iloc[start_pos:end_pos][:]
+    dataframe = dataframe.loc[::-1]
+
     return dataframe
+
 
 # # Now target column and dateTime colum will be arranged as a given column index. Here target column is the output of turbine 9's output
 
 
-def rearrange_frame(dataframe,colname,col_pos):
-    
-    list_col=dataframe.columns.to_list()
-    temp_list=list_col
-    for idx,i in enumerate(colname):
-        sacrifice_val = temp_list[col_pos[idx]]        
-        indx=dataframe.columns.get_loc(i)
-        temp_list[col_pos[idx]]=i
-        temp_list[indx]=sacrifice_val
-        
+def rearrange_frame(dataframe, colname, col_pos):
+    list_col = dataframe.columns.to_list()
+    temp_list = list_col
+    for idx, i in enumerate(colname):
+        sacrifice_val = temp_list[col_pos[idx]]
+        indx = dataframe.columns.get_loc(i)
+        temp_list[col_pos[idx]] = i
+        temp_list[indx] = sacrifice_val
+
     return dataframe.iloc[:][temp_list]
 
 
@@ -92,30 +94,30 @@ def rearrange_frame(dataframe,colname,col_pos):
 # so, remove all the rows where this value will be zero
 
 def drop_zero_value_row_of_blast_furnace_signal(dataframe, blast_furnace_signal):
-#     dataframe = dataframe.reset_index()
+    #     dataframe = dataframe.reset_index()
     count = []
     print(blast_furnace_signal)
     for idx_blast_furnace, val_blast_furnace in enumerate(dataframe[blast_furnace_signal]):
-        if val_blast_furnace != 100 :
-            count = np.append(count,idx_blast_furnace)
+        if val_blast_furnace != 100:
+            count = np.append(count, idx_blast_furnace)
     print('size of count array here: ', count.size)
-    
+
     if count.size > 0:
-        dataframe_1 = dataframe.drop(count,axis=0) # axis= 0 means row indiated. 1 means column indicated
+        dataframe_1 = dataframe.drop(count, axis=0)  # axis= 0 means row indiated. 1 means column indicated
     else:
         dataframe_1 = dataframe
-    dataframe_1 = dataframe_1.drop([blast_furnace_signal], axis=1) # dropping the column. because all value are same   
+    dataframe_1 = dataframe_1.drop([blast_furnace_signal], axis=1)  # dropping the column. because all value are same
     return dataframe_1
 
-# # Now choose the target colum  and check if any value is zero or not. If zero then drop those rows. here taret column is T9's output, signal name is AEWIHO_T9AV2
 
+# # Now choose the target colum  and check if any value is zero or not. If zero then drop those rows. here taret column is T9's output, signal name is AEWIHO_T9AV2
 
 
 def drop_zero_value_row_of_target_signal(dataframe, target_signal):
     count = []
     for idx_blast_furnace, val_blast_furnace in enumerate(dataframe[target_signal]):
-        if val_blast_furnace == 0 :
-            count = np.append(count,idx_blast_furnace)
+        if val_blast_furnace == 0:
+            count = np.append(count, idx_blast_furnace)
 
     for i in count:
         if i > 24222:
@@ -123,20 +125,21 @@ def drop_zero_value_row_of_target_signal(dataframe, target_signal):
     print('size of count array: ', count.size)
 
     if count.size > 0:
-        dataframe_1 = dataframe.drop(count,axis=0) # axis= 0 means row indiated. 1 means column indicated
+        dataframe_1 = dataframe.drop(count, axis=0)  # axis= 0 means row indiated. 1 means column indicated
     else:
         dataframe_1 = dataframe
-    dataframe_1 = dataframe_1.drop(dataframe_1.columns[0], axis = 1) # generally after resetting index the former index 
-                                                                                            # take place the first place of the column. so removing it.
+    dataframe_1 = dataframe_1.drop(dataframe_1.columns[0], axis=1)  # generally after resetting index the former index
+    # take place the first place of the column. so removing it.
     return dataframe_1
 
 
 def drop_column_with_same_value(dataframe):
     cols = dataframe.select_dtypes([np.number]).columns
     diff = dataframe[cols].diff().sum()
-    dataframe_drop_column_with_same_value = dataframe.drop(diff[diff== 0].index, axis=1)
-    
+    dataframe_drop_column_with_same_value = dataframe.drop(diff[diff == 0].index, axis=1)
+
     return dataframe_drop_column_with_same_value
+
 
 # # check on the whole dataframe if there is any NAN value or not. If YES, replace it with zero and drop
 # Think twice before using this function
@@ -146,62 +149,63 @@ def drop_column_with_same_value(dataframe):
 # print(a)
 
 def drop_nan_value(dataframe):
-    for index,column in enumerate(dataframe):
+    for index, column in enumerate(dataframe):
         nan_catcher = dataframe[column].isnull().sum()
-        if nan_catcher !=0:
-            dataframe_1 = dataframe[column].replace(0,nan)
-            dataframe_1 = dataframe.dropna(how='any',axis=0)
-#             print(column,' has total',nan_catcher, 'nan valu')
+        if nan_catcher != 0:
+            dataframe_1 = dataframe[column].replace(0, nan)
+            dataframe_1 = dataframe.dropna(how='any', axis=0)
+        #             print(column,' has total',nan_catcher, 'nan valu')
         else:
             dataframe_1 = dataframe
-#             print(column,' is free from nan value. look it has: ', nan_catcher,' value')
-            
+    #             print(column,' is free from nan value. look it has: ', nan_catcher,' value')
+
     return dataframe_1
 
+
 def drop_row(dataframe):
-    
     for i in dataframe:
-#        print(i)
+        #        print(i)
         dataframe_drop_row_consecutive_same_value = dataframe.loc[dataframe[i].shift() != dataframe[i]]
-    
+
     return dataframe_drop_row_consecutive_same_value
+
 
 def drop_string_column(dataframe):
     drop_object = dataframe.select_dtypes(exclude=['object'])
-    
+
     return drop_object
 
 
 # # All data cleaning process has done. Now feature selection process will come. Before doing this just make a copy of dataframe and set the index as dateTime
 
 
-def feature_selection_with_selectKbest(dataframe,max_best_number):
-    train_input = dataframe.iloc[:,:-1]
-    train_output = dataframe.iloc[:,-1]
+def feature_selection_with_selectKbest(dataframe, max_best_number):
+    train_input = dataframe.iloc[:, :-1]
+    train_output = dataframe.iloc[:, -1]
     train_output = train_output.to_frame()
-#     train_output = pd.DataFrame(train_output)
-    
+    #     train_output = pd.DataFrame(train_output)
+
     X, y = train_input, train_output
     X = X.astype(int)
     y = y.astype(int)
-    
+
     bestfeatures = SelectKBest(score_func=chi2, k=2)
-    fit = bestfeatures.fit(X,y)
+    fit = bestfeatures.fit(X, y)
     dfscores = pd.DataFrame(fit.scores_)
     dfcolumns = pd.DataFrame(X.columns)
-    
-    featureScores = pd.concat([dfcolumns,dfscores],axis=1)
-    featureScores.columns = ['Specs','Score']  #naming the dataframe columns
-#     print(featureScores.nlargest(20,'Score'))  #print 10 best features
-    d = featureScores.nlargest(max_best_number,'Score')
-    
+
+    featureScores = pd.concat([dfcolumns, dfscores], axis=1)
+    featureScores.columns = ['Specs', 'Score']  # naming the dataframe columns
+    #     print(featureScores.nlargest(20,'Score'))  #print 10 best features
+    d = featureScores.nlargest(max_best_number, 'Score')
+
     e = []
-    for i,v in enumerate(d['Specs']):
-        e = np.append(e,v)
-    
-    e = np.append(e,dataframe.columns[-1])
+    for i, v in enumerate(d['Specs']):
+        e = np.append(e, v)
+
+    e = np.append(e, dataframe.columns[-1])
     final_dataframe = dataframe.iloc[:][e]
-    
+
     return final_dataframe
 
 
@@ -215,165 +219,67 @@ def pearson_correlation(sklearn_dataframe, main_dataframe):
     main_correlation = main_dataframe.corr()
     return sklearn_correlation, main_correlation
 
-# # use the correlation matrix to make the new dataframe where the feature will be the column who has a correlation value with the target in a given range. 
+
+# # use the correlation matrix to make the new dataframe where the feature will be the column who has a correlation value with the target in a given range.
 
 # function to make dataframe with high correlated valued column
-def make_dataframe_with_high_correlated_value(main_dataframe,correlated_dataframe,
-                                              correlation_threshold_value,max_value):
-    
+def make_dataframe_with_high_correlated_value(main_dataframe, correlated_dataframe,
+                                              correlation_threshold_value, max_value):
     target_column = main_dataframe.columns[-1]
-    
+
     dataframe = correlated_dataframe.reset_index()
-    
+
     high_correlated_array_with_target = []
     for index_corr_reset, val_corr_reset in enumerate(dataframe[target_column]):
         if val_corr_reset > correlation_threshold_value and val_corr_reset < max_value:
             required_column = dataframe.loc[index_corr_reset]['index']
             if required_column != target_column:
-                high_correlated_array_with_target = np.append(high_correlated_array_with_target,required_column)
+                high_correlated_array_with_target = np.append(high_correlated_array_with_target, required_column)
             else:
                 print(required_column)
                 pass
-            
-    final_array = np.append(high_correlated_array_with_target,target_column)
+
+    final_array = np.append(high_correlated_array_with_target, target_column)
     new_dataframe = main_dataframe.iloc[:][final_array]
-    
+
     return new_dataframe
 
 
+def dataframe_date_time_type(dataframe):
+    df = pd.DataFrame(index=dataframe.index)
+    target_df = dataframe.loc[:, dataframe.columns[-1]]
+    df['dateTime_column'] = pd.to_datetime(dataframe.index, format='%Y-%m-%d %H:%M')
+    df['day_name'] = df.index.weekday_name
+    df['TypeofDAY'] = np.where(df['dateTime_column'].dt.dayofweek < 5, 'Weekday',
+                               'Weekend')  # if the associated number less than 5 then weekend, otherwise weekday
+    df['TypeofDAY_number'] = np.where(df['dateTime_column'].dt.dayofweek < 5, 1, 0)  # 1 for weekday, 0 for weekend
+    df['Date'] = df['dateTime_column'].dt.strftime('%Y-%m-%d')
+
+    df = pd.concat([df, target_df], axis=1)
+
+    return df
 
 
+def my_sum(x,y):
+    s = x+y
+    return s
 
-    # # Now dataframe for weekday, weekend, daywise, shiftwise will be made
-    
-    # In[ ]:
-    
-    
-    
-    
-    # In[ ]:
-    
-    
-    # new_dataframe_index_datetime = dataframe_datetime.copy()
-    
-    
-    # In[ ]:
-    
-    
-    df2 = pd.DataFrame(index = dataframe_datetime.index)
-    
-    
-    # In[ ]:
-    
-    
-    target_df2 = dataframe_datetime.loc[:,dataframe_datetime.columns[-1]]
-    
-    
-    # In[ ]:
-    
-    
-    type(target_df2)
-    
-    
-    # In[ ]:
-    
-    
-    # df3 = pd.concat([df2, target_df2], axis=1)
-    
-    
-    # In[ ]:
-    
-    
-    # df3.shape
-    
-    
-    # In[ ]:
-    
-    
-    df2.shape
-    
-    
-    # In[ ]:
-    
-    
-    df2['dateTime_column'] =  pd.to_datetime(dataframe_datetime.index, format='%Y-%m-%d %H:%M')
-    
-    
-    # In[ ]:
-    
-    
-    df2.head()
-    
-    
-    # In[ ]:
-    
-    
-    # checking type of the contect of the column
-    s = df2['dateTime_column'].dtype
-    print(s)
-    
-    # checking column type
-    t = df2.dateTime_column
-    print(type(t))
-    
-    
-    # In[ ]:
-    
-    
-    df2.shape
-    
-    
-    # In[ ]:
-    
-    
-    # df2['Date'] = df2[df2.index].dt.strftime('%d/%m/%Y')
-    # df2['Time'] = df2[df2.index].dt.strftime('%H:%M:%S')
-    
-    
-    # In[ ]:
-    
-    
-    # it will return a column with weekday name
-    df2['Weekday_name'] = df2.index.weekday_name
-    
-    
-    # In[ ]:
-    
-    
-    df2['TypeofDAY'] = np.where(df2['dateTime_column'].dt.dayofweek < 5, 'Weekday', 'Weekend') # if the associated number less than 5 then weekend, otherwise weekday
-    df2['TypeofDAY_number'] = np.where(df2['dateTime_column'].dt.dayofweek < 5, 1, 0) # 1 for weekday, 0 for weekend
-    
-    
-    # In[ ]:
-    
-    
-    df2['Date'] = df2['dateTime_column'].dt.strftime('%Y-%m-%d')
-    # df2['Date'] = pd.to_datetime(df2['Date'])
-    
-    
-    # In[ ]:
-    
-    
-    df2.head()
-    
-    
-    # In[ ]:
-    
-    
-    dict_of_dates = {k: v for k, v in df2.groupby('Date')}
-    dict_of_day_type = {k:v for k,v in df2.groupby('TypeofDAY')}
-    
-    
-    # In[ ]:
-    
-    
-    date_key_value = collections.OrderedDict(dict_of_dates)
-    day_type_key_value = collections.OrderedDict(dict_of_day_type)
-    
-    
-    # In[ ]:
-    
-    
-    for i in day_type_key_value:
-        print(i)
-    
+
+def draw_graph(dictionary_value, dictionary, target, path, subfolder_name):
+    fig_location = path + '/' + str(subfolder_name)
+
+    if not os.path.exists(fig_location):
+        os.makedirs(fig_location)
+    else:
+        shutil.rmtree(fig_location, ignore_errors=True)
+        os.makedirs(fig_location)
+    for i in dictionary_value:
+        value = dictionary[i]
+        value.iloc[:].plot(y=[target])
+
+        plt.title('visualization of signal ' + str(target) + ' in time of ' + str(i))
+        plt.xlabel('range')
+        plt.ylabel('value')
+
+        plt.rcParams['figure.figsize'] = (20, 10)
+        plt.savefig(fig_location + '/' + str(i) + '.jpg')
