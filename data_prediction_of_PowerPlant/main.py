@@ -31,8 +31,9 @@ from dataset_analysis import my_sum
 from dataset_analysis import draw_graph
 
 from model_file import make_dataset
-from  model_file import plot_graph
 from model_file import scikit_learn_model
+from  model_file import plot_graph
+from model_file import evaluation_metrices
 e = my_sum(9,2)
 print(e)
 
@@ -152,7 +153,11 @@ train_input, train_output, test_input, test_output = make_dataset(dataframe_high
 model_list = [LinearRegression(), ExtraTreesRegressor()]
 name = ['LinearRegression','ExtraTreesRegressor']
 
-model_result = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output)
+predicted_output = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output)
+
+graph = plot_graph(test_output, predicted_output)
+
+evaluate_model = evaluation_metrices(test_output, predicted_output)
 
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten

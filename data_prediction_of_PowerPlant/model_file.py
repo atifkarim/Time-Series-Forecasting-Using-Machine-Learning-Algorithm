@@ -33,6 +33,19 @@ def make_dataset(dataframe):
     return train_input, train_output, test_input, test_output
 
 
+
+
+#(model_list: object, name: object, train_input: object, train_output: object, test_input: object, test_output: object) -> object
+def scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output):
+    for idx, i in enumerate(model_list):
+        train_model_1 = i
+        print('-------', name[idx])
+        train_model_1.fit(train_input, train_output)
+        predicted_output = train_model_1.predict(test_input)
+    return predicted_output
+
+
+
 def plot_graph(test_output, predicted_output):
     plt.plot((min(test_output), max(test_output)), (min(predicted_output), max(predicted_output)), color='red')
     plt.scatter(test_output, predicted_output, color='blue')
@@ -77,19 +90,10 @@ def plot_graph(test_output, predicted_output):
 
 
 
-#(model_list: object, name: object, train_input: object, train_output: object, test_input: object, test_output: object) -> object
-def scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output):
-    for idx, i in enumerate(model_list):
-        train_model_1 = i
-        print('-------', name[idx])
-        train_model_1.fit(train_input, train_output)
-        predicted_output = train_model_1.predict(test_input)
-
-        graph = plot_graph(test_output, predicted_output)
-
-        print('r_2 statistic: %.2f' % r2_score(test_output, predicted_output))
-        print("Mean_absolute_error: %.2f" % mean_absolute_error(test_output, predicted_output))
-        print("Mean squared error: %.2f" % mean_squared_error(test_output, predicted_output))
-        RMSE = math.sqrt(mean_squared_error(test_output, predicted_output))
-        print('RMSE: ', RMSE)
-        print('!!!!---------------!!!!----------------!!!!')
+def evaluation_metrices(test_output,predicted_output):
+    print('r_2 statistic: %.2f' % r2_score(test_output, predicted_output))
+    print("Mean_absolute_error: %.2f" % mean_absolute_error(test_output, predicted_output))
+    print("Mean squared error: %.2f" % mean_squared_error(test_output, predicted_output))
+    RMSE = math.sqrt(mean_squared_error(test_output, predicted_output))
+    print('RMSE: ', RMSE)
+    print('!!!!---------------!!!!----------------!!!!')
