@@ -9,6 +9,7 @@ import collections
 import os
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import *
+import matplotlib.pyplot as plt
 from sklearn import linear_model
 
 from dataset_analysis import create_dataframe
@@ -151,3 +152,44 @@ model_list = [LinearRegression(), ExtraTreesRegressor()]
 name = ['LinearRegression','ExtraTreesRegressor']
 
 model_result = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output)
+
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Flatten
+from sklearn.metrics import mean_absolute_error
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint
+
+lr = 0.01
+
+def lr_schedule(epoch):
+    return lr * (0.1 ** int(epoch / 10))
+
+batch_size=32
+epochs= 100
+
+def NN_model():
+    NN_model = Sequential()
+    NN_model.add(Dense(32, kernel_initializer='normal',input_dim = train_input.shape[1], activation='relu'))
+    NN_model.add(Dense(64, kernel_initializer='normal',activation='relu'))
+    NN_model.add(Dense(128, kernel_initializer='normal',activation='relu'))
+    NN_model.add(Dense(256, kernel_initializer='normal',activation='relu'))
+    NN_model.add(Dense(512, kernel_initializer='normal', activation='relu'))
+    NN_model.add(Dense(1024, kernel_initializer='normal', activation='relu'))
+    NN_model.add(Dense(2048, kernel_initializer='normal', activation='relu'))
+#     NN_model.add(Dense(1, kernel_initializer='normal',activation='relu'))
+    NN_model.add(Dense(1))
+    return NN_model
+NN_model=NN_model()
+NN_model.compile(loss='mean_absolute_error', optimizer='adam', metrics=['mean_absolute_error','accuracy'])
+NN_model.summary()
+
+
+NN_model.fit(train_input, train_output, epochs=epochs, batch_size=batch_size)
+
+predicted_output = NN_model.predict(test_input)
+
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+print('r_2 statistic: %.2f' % r2_score(test_output,predicted_output))
+print("Mean_absolute_error: %.2f" % mean_absolute_error(test_output,predicted_output))
+print("Mean squared error: %.2f" % mean_squared_error(test_output,predicted_output))
+RMSE=math.sqrt(mean_squared_error(test_output,predicted_output))
+print('RMSE: ',RMSE)
