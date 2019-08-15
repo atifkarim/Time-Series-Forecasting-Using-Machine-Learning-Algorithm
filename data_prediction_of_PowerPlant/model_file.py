@@ -65,6 +65,7 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.xlabel('test_output')
     plt.ylabel('predicted_output')
     plt.title('scatter plotting of predicted_output alongside with the average line of test and predicted output')
+    plt.rcParams['figure.figsize'] =(20,10)
     plt.savefig(fig_location + '/' + "scatter_test_pred" + '.jpg')
     plt.show()
 
@@ -80,6 +81,7 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.ylabel('difference of value')
     plt.xlabel('range')
     plt.grid(b=None, which='both', axis='both')
+    plt.rcParams['figure.figsize'] =(20,10)
     plt.savefig(fig_location + '/' + "difference_test_pred" + '.jpg')
     plt.show()
 
@@ -89,6 +91,7 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.xlabel('value')
     plt.ylabel('frequency')
     plt.title('histogram of value of difference')
+    plt.rcParams['figure.figsize'] =(20,10)
     plt.savefig(fig_location + '/' + "error_histogram" + '.jpg')
     plt.show()
 
@@ -100,6 +103,7 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.xlabel('range')
     plt.ylabel('value of test and predicted output')
     plt.title('Visualization of test and predicted output in the same timestamp')
+    plt.rcParams['figure.figsize'] =(20,10)
     plt.savefig(fig_location + '/' + "test_and_pred" + '.jpg')
     plt.show()
 

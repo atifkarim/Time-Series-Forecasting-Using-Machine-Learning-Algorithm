@@ -8,11 +8,9 @@ import json
 import collections
 import os
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import *
+from sklearn.ensemble import ExtraTreesRegressor
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn import linear_model
 
 from dataset_analysis import create_dataframe
 from dataset_analysis import conversion_timestamp_to_unixtime
