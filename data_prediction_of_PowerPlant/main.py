@@ -13,6 +13,7 @@ from sklearn import linear_model
 
 from dataset_analysis import create_dataframe
 from dataset_analysis import conversion_timestamp_to_unixtime
+from dataset_analysis import remove_rw_column
 from dataset_analysis import alter_time
 from dataset_analysis import rearrange_frame
 from dataset_analysis import drop_zero_value_row_of_blast_furnace_signal
@@ -62,10 +63,10 @@ test_new.head()
 # dropping row_ID column. As it contains 'object' type data
 test_new_1 = test_new.drop(['row ID'], axis = 1)
 
+test_new_2 = remove_rw_column(test_new_1)
+
 # Taking define number of row from the beginning
-#start_pos = 0
-#end_pos = 25000
-multivariate_data = alter_time(test_new_1, start_pos, end_pos)
+multivariate_data = alter_time(test_new_2, start_pos, end_pos)
 
 # Changing target column and dateTime column's position
 index_array=[0,-1]
