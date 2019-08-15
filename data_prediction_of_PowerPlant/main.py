@@ -159,10 +159,10 @@ train_input, train_output, test_input, test_output = make_dataset(dataframe_high
 model_list = [LinearRegression(), ExtraTreesRegressor()]
 name = ['LinearRegression','ExtraTreesRegressor']
 
-predicted_output = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output)
+model = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output, final_directory)
 
-graph = plot_graph(test_output, predicted_output)
-evaluate_model = evaluation_metrices(test_output, predicted_output)
+#graph = plot_graph(test_output, predicted_output)
+#evaluate_model = evaluation_metrices(test_output, predicted_output)
 
 
 

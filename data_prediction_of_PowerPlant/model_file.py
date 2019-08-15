@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import shutil
 from sklearn import metrics
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import *
@@ -36,23 +38,34 @@ def make_dataset(dataframe):
 
 
 #(model_list: object, name: object, train_input: object, train_output: object, test_input: object, test_output: object) -> object
-def scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output):
+def scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output, final_directory):
     for idx, i in enumerate(model_list):
         train_model_1 = i
         print('-------', name[idx])
         train_model_1.fit(train_input, train_output)
         predicted_output = train_model_1.predict(test_input)
-    return predicted_output
+        
+        graph = plot_graph(test_output, predicted_output,final_directory,name[idx])
+        evaluate_model = evaluation_metrices(test_output, predicted_output)
 
 
 
-def plot_graph(test_output, predicted_output):
+def plot_graph(test_output, predicted_output, final_directory,subfolder):
+    fig_location = final_directory + '/' + str(subfolder)
+
+    if not os.path.exists(fig_location):
+        os.makedirs(fig_location)
+    else:
+        shutil.rmtree(fig_location, ignore_errors=True)
+        os.makedirs(fig_location)
+
     plt.plot((min(test_output), max(test_output)), (min(predicted_output), max(predicted_output)), color='red')
     plt.scatter(test_output, predicted_output, color='blue')
     # plt.savefig(model+'_'+'figure_actual_vs_predicted_with_best_fit_line.jpg')
     plt.xlabel('test_output')
     plt.ylabel('predicted_output')
     plt.title('scatter plotting of predicted_output alongside with the average line of test and predicted output')
+    plt.savefig(fig_location + '/' + "scatter_test_pred" + '.jpg')
     plt.show()
 
     difference_of_value = predicted_output - test_output
@@ -67,7 +80,7 @@ def plot_graph(test_output, predicted_output):
     plt.ylabel('difference of value')
     plt.xlabel('range')
     plt.grid(b=None, which='both', axis='both')
-    # plt.savefig(model+'_'+'difference_of_actual_and_predicted_value.png')
+    plt.savefig(fig_location + '/' + "difference_test_pred" + '.jpg')
     plt.show()
 
     plt.hist(difference_of_value, bins=20)
@@ -76,6 +89,7 @@ def plot_graph(test_output, predicted_output):
     plt.xlabel('value')
     plt.ylabel('frequency')
     plt.title('histogram of value of difference')
+    plt.savefig(fig_location + '/' + "error_histogram" + '.jpg')
     plt.show()
 
     plt.plot(predicted_output[0:len(predicted_output[0:])], color='blue')
@@ -86,6 +100,7 @@ def plot_graph(test_output, predicted_output):
     plt.xlabel('range')
     plt.ylabel('value of test and predicted output')
     plt.title('Visualization of test and predicted output in the same timestamp')
+    plt.savefig(fig_location + '/' + "test_and_pred" + '.jpg')
     plt.show()
 
 
