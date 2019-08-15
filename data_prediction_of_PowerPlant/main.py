@@ -41,6 +41,7 @@ with open('variable_config.json', 'r') as f:
     config = json.load(f)
 
 filepath = config['DEFAULT']['file_path']
+filepath_ubuntu = config['DEFAULT']['file_path_ubuntu']
 start_pos = config['DEFAULT']['start_point_dataframe']
 end_pos = config['DEFAULT']['end_point_dataframe']
 date_column = config['DEFAULT']['date_column']
@@ -54,7 +55,7 @@ print(correlation_threshold_max_value)
 
 #filepath = 'E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv'
 # reading CSV file
-initial_dataframe = create_dataframe(filepath)
+initial_dataframe = create_dataframe(filepath_ubuntu)
 
 # creating dateTime column
 test_new = conversion_timestamp_to_unixtime(initial_dataframe)
