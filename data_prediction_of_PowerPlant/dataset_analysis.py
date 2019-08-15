@@ -71,8 +71,7 @@ def remove_rw_column(dataframe):
         x = i[:2]
         if x != 'RW':
             new_variable = np.append(new_variable, i)
-            dataframe_1 = dataframe.iloc[:][new_variable]
-    return dataframe_1
+    return new_variable
 
 
 def alter_time(dataframe, start_pos, end_pos):

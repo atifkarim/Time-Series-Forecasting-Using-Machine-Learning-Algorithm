@@ -9,6 +9,8 @@ import collections
 import os
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import *
+import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn import linear_model
 
@@ -32,8 +34,10 @@ from dataset_analysis import draw_graph
 
 from model_file import make_dataset
 from model_file import scikit_learn_model
-from  model_file import plot_graph
+from model_file import plot_graph
 from model_file import evaluation_metrices
+
+from NN_model_file import NN_model
 e = my_sum(9,2)
 print(e)
 
@@ -56,7 +60,7 @@ print(correlation_threshold_max_value)
 
 #filepath = 'E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv'
 # reading CSV file
-initial_dataframe = create_dataframe(filepath_ubuntu)
+initial_dataframe = create_dataframe(filepath)
 
 # creating dateTime column
 test_new = conversion_timestamp_to_unixtime(initial_dataframe)
@@ -66,7 +70,9 @@ test_new.head()
 # dropping row_ID column. As it contains 'object' type data
 test_new_1 = test_new.drop(['row ID'], axis = 1)
 
-test_new_2 = remove_rw_column(test_new_1)
+var_new = remove_rw_column(test_new_1)
+
+test_new_2 = test_new_1.iloc[:][var_new]
 
 # Taking define number of row from the beginning
 multivariate_data = alter_time(test_new_2, start_pos, end_pos)
@@ -156,13 +162,9 @@ name = ['LinearRegression','ExtraTreesRegressor']
 predicted_output = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output)
 
 graph = plot_graph(test_output, predicted_output)
-
 evaluate_model = evaluation_metrices(test_output, predicted_output)
 
-from keras.models import Sequential
-from keras.layers import Dense, Activation, Flatten
-from sklearn.metrics import mean_absolute_error
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint
+
 
 lr = 0.01
 
@@ -170,32 +172,18 @@ def lr_schedule(epoch):
     return lr * (0.1 ** int(epoch / 10))
 
 batch_size=32
-epochs= 100
+epochs= 30
 
-def NN_model():
-    NN_model = Sequential()
-    NN_model.add(Dense(32, kernel_initializer='normal',input_dim = train_input.shape[1], activation='relu'))
-    NN_model.add(Dense(64, kernel_initializer='normal',activation='relu'))
-    NN_model.add(Dense(128, kernel_initializer='normal',activation='relu'))
-    NN_model.add(Dense(256, kernel_initializer='normal',activation='relu'))
-    NN_model.add(Dense(512, kernel_initializer='normal', activation='relu'))
-    NN_model.add(Dense(1024, kernel_initializer='normal', activation='relu'))
-    NN_model.add(Dense(2048, kernel_initializer='normal', activation='relu'))
-#     NN_model.add(Dense(1, kernel_initializer='normal',activation='relu'))
-    NN_model.add(Dense(1))
-    return NN_model
-NN_model=NN_model()
+
+NN_model=NN_model(train_input)
 NN_model.compile(loss='mean_absolute_error', optimizer='adam', metrics=['mean_absolute_error','accuracy'])
 NN_model.summary()
 
 
-NN_model.fit(train_input, train_output, epochs=epochs, batch_size=batch_size)
+NN_train_model = NN_model.fit(train_input, train_output, epochs=epochs, batch_size=batch_size)
 
-predicted_output = NN_model.predict(test_input)
+predicted_output_NN = NN_model.predict(test_input)
+test_output_NN = np.reshape(test_output,(-1,1))
 
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-print('r_2 statistic: %.2f' % r2_score(test_output,predicted_output))
-print("Mean_absolute_error: %.2f" % mean_absolute_error(test_output,predicted_output))
-print("Mean squared error: %.2f" % mean_squared_error(test_output,predicted_output))
-RMSE=math.sqrt(mean_squared_error(test_output,predicted_output))
-print('RMSE: ',RMSE)
+graph_NN = plot_graph(test_output_NN, predicted_output_NN)
+evaluate_NN = evaluation_metrices(test_output_NN, predicted_output_NN)
