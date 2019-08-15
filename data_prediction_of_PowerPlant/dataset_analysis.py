@@ -64,6 +64,17 @@ def conversion_timestamp_to_unixtime(initial_dataframe):
 
 # here using test_new_1 as it has no row ID column and also no problematic value
 
+
+def remove_rw_column(dataframe):
+    new_variable = []
+    for i in dataframe:
+        x = i[:2]
+        if x != 'RW':
+            new_variable = np.append(new_variable, i)
+            dataframe_1 = dataframe.iloc[:][new_variable]
+    return dataframe_1
+
+
 def alter_time(dataframe, start_pos, end_pos):
     #     multivariate_data=test_new.iloc[start_pos:end_pos][multivariate_column_label] # comment out this line if you pass column label
     dataframe = dataframe.iloc[start_pos:end_pos][:]
