@@ -10,6 +10,7 @@ import os
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import ExtraTreesRegressor
 import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd
 
 from dataset_analysis import create_dataframe
@@ -29,6 +30,7 @@ from dataset_analysis import make_dataframe_with_high_correlated_value
 from dataset_analysis import dataframe_date_time_type
 from dataset_analysis import my_sum
 from dataset_analysis import draw_graph
+from dataset_analysis import draw_feature_vs_target
 
 from model_file import make_dataset
 from model_file import scikit_learn_model
@@ -53,12 +55,13 @@ furnace_signal_column = config['DEFAULT']['blast_furnace_signal']
 max_best_number = config['DEFAULT']['max_best_number']
 correlation_threshold_min_value = config['DEFAULT']['correlation_threshold_min_value']
 correlation_threshold_max_value = config['DEFAULT']['correlation_threshold_max_value']
-print(type(correlation_threshold_max_value))
-print(correlation_threshold_max_value)
+subfolder_feature_vs_target = config['DEFAULT']['subfolder_feature_vs_target']
+print(type(subfolder_feature_vs_target))
+print(subfolder_feature_vs_target)
 
 #filepath = 'E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv'
 # reading CSV file
-initial_dataframe = create_dataframe(filepath)
+initial_dataframe = create_dataframe(filepath_ubuntu)
 
 # creating dateTime column
 test_new = conversion_timestamp_to_unixtime(initial_dataframe)
@@ -126,6 +129,28 @@ correlated_frame = main_correlation
 dataframe_high_correlation = make_dataframe_with_high_correlated_value(main_frame,correlated_frame,
                                                              correlation_threshold_min_value, correlation_threshold_max_value)
 
+
+current_directory = os.getcwd()
+print('current_directory is: ',current_directory)
+address = 'image_folder'
+final_directory = current_directory+'/'+str(address)
+if not os.path.exists(final_directory):
+    os.makedirs(final_directory)
+    print('created : ', final_directory)
+else:
+    print(final_directory,' has already created')
+    pass
+
+# draw graph all feature vs target
+
+print(len(dataframe_high_correlation.columns))
+
+# for now_num in range(len(dataframe_high_correlation.columns)-1):
+#     col_name = dataframe_high_correlation.columns[now_num]
+#     dataframe_high_correlation.iloc[0:100].plot(dataframe_high_correlation.columns[now_num],dataframe_high_correlation.columns[-1])
+#     plt.title('title is '+str(col_name))
+
+
 df = dataframe_date_time_type(dataframe_datetime)
 
 dict_of_dates = {k: v for k, v in df.groupby('Date')}
@@ -136,16 +161,6 @@ dict_of_day_name = {k:v for k,v in df.groupby('day_name')}
 date_key_value = collections.OrderedDict(dict_of_dates)
 day_type_key_value = collections.OrderedDict(dict_of_day_type)
 day_name_key_value = collections.OrderedDict(dict_of_day_name)
-
-current_directory = os.getcwd()
-print(current_directory)
-address = 'image_folder'
-final_directory = current_directory+'/'+str(address)
-if not os.path.exists(final_directory):
-    os.makedirs(final_directory)
-    print('created : ', final_directory)
-else:
-    pass
 
 draw_graph_date = draw_graph(date_key_value,dict_of_dates, target_column,final_directory, subfolder_name = 'date_fig')
 draw_graph_week = draw_graph(day_type_key_value,dict_of_day_type, target_column,final_directory, subfolder_name = 'week_fig')
@@ -164,6 +179,14 @@ model = scikit_learn_model(model_list, name, train_input, train_output, test_inp
 
 
 
+
+
+
+
+
+
+
+# for testing with Neural Network
 lr = 0.01
 
 def lr_schedule(epoch):

@@ -11,6 +11,7 @@
     "max_best_number": 20,
     "correlation_threshold_min_value": 0.5,
     "correlation_threshold_max_value": 0.9,
-    "image_type": ".jpg"
+    "image_type": ".jpg",
+    "subfolder_feature_vs_target": "feature_vs_target"
   }
 }

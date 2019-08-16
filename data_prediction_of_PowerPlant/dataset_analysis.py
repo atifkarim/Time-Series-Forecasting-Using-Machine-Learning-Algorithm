@@ -293,3 +293,13 @@ def draw_graph(dictionary_value, dictionary, target, path, subfolder_name):
 
         plt.rcParams['figure.figsize'] = (20, 10)
         plt.savefig(fig_location + '/' + str(i) + '.jpg')
+
+
+
+def draw_feature_vs_target(dataframe,final_directory,subfolder):
+    for now_num in range(len(dataframe.columns) - 1):
+        col_name = dataframe.columns[now_num]
+        dataframe.iloc[0:100].plot(dataframe.columns[now_num],dataframe.columns[-1])
+        plt.xlabel(dataframe.columns[now_num])
+        plt.ylabel(dataframe.columns[-1])
+        plt.title('title is ' + str(col_name))
