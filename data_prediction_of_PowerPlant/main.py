@@ -9,6 +9,8 @@ import collections
 import os
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import ExtraTreesRegressor
+from sklearn import linear_model
+from sklearn import tree
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -171,10 +173,13 @@ draw_graph_day = draw_graph(day_name_key_value,dict_of_day_name, target_column,f
 
 train_input, train_output, test_input, test_output = make_dataset(dataframe_high_correlation)
 
-model_list = [LinearRegression(), ExtraTreesRegressor()]
-name = ['LinearRegression','ExtraTreesRegressor']
+#s_array = dataframe_high_correlation.values
+model_list = [LinearRegression(),linear_model.Lasso(alpha=0.1),linear_model.Ridge(alpha=.5),
+              linear_model.BayesianRidge(), tree.DecisionTreeRegressor(max_depth=2), ExtraTreesRegressor()]
+name = ['LinearRegression','Lasso','Ridge','BayesianRidge','tree','ExtraTreesRegressor']
 
 model = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output, final_directory)
+#model = scikit_learn_model(model_list, name, s_array[5000:21000,:-1],s_array[5000:21000,-1],s_array[23000:23500,:-1],s_array[23000:23500,-1], final_directory)
 
 #graph = plot_graph(test_output, predicted_output)
 #evaluate_model = evaluation_metrices(test_output, predicted_output)
