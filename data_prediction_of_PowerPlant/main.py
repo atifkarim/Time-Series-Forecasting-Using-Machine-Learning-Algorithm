@@ -61,7 +61,7 @@ print(subfolder_feature_vs_target)
 
 #filepath = 'E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv'
 # reading CSV file
-initial_dataframe = create_dataframe(filepath_ubuntu)
+initial_dataframe = create_dataframe(filepath)
 
 # creating dateTime column
 test_new = conversion_timestamp_to_unixtime(initial_dataframe)
@@ -144,6 +144,8 @@ else:
 # draw graph all feature vs target
 
 print(len(dataframe_high_correlation.columns))
+subfolder_1 = 'feature_vs_target'
+draw_feature_vs_target = draw_feature_vs_target(dataframe_high_correlation,final_directory,subfolder_1)
 
 # for now_num in range(len(dataframe_high_correlation.columns)-1):
 #     col_name = dataframe_high_correlation.columns[now_num]

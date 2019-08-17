@@ -1,11 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import math
-import time
 import datetime
 from numpy import nan
-from sklearn.datasets import load_iris
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 import collections
@@ -13,7 +10,6 @@ import os
 import shutil
 # get_ipython().run_line_magic('matplotlib', 'inline')
 from matplotlib.pylab import rcParams
-
 
 # # function to read the csv file
 
@@ -297,9 +293,21 @@ def draw_graph(dictionary_value, dictionary, target, path, subfolder_name):
 
 
 def draw_feature_vs_target(dataframe,final_directory,subfolder):
+    fig_location = final_directory + '/' + str(subfolder)
+
+    if not os.path.exists(fig_location):
+        os.makedirs(fig_location)
+    else:
+        shutil.rmtree(fig_location, ignore_errors=True)
+        os.makedirs(fig_location)
+
     for now_num in range(len(dataframe.columns) - 1):
         col_name = dataframe.columns[now_num]
         dataframe.iloc[0:100].plot(dataframe.columns[now_num],dataframe.columns[-1])
-        plt.xlabel(dataframe.columns[now_num])
-        plt.ylabel(dataframe.columns[-1])
-        plt.title('title is ' + str(col_name))
+        x_axis = dataframe.columns[now_num]
+        y_axis = dataframe.columns[-1]
+        plt.xlabel(x_axis)
+        plt.ylabel(y_axis)
+        plt.title('title is ' + str(col_name)+' vs '+str(y_axis))
+        plt.rcParams['figure.figsize'] = (20, 10)
+        plt.savefig(fig_location + '/' +str(col_name)+' vs '+str(y_axis) + '.jpg')
