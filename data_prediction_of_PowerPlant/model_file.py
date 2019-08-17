@@ -18,7 +18,7 @@ import math
 
 def make_dataset(dataframe):
     dataset = np.array(dataframe)
-    NumberOfElements = int(len(dataset) * 0.97)
+    NumberOfElements = int(len(dataset) * 0.99)
     print('Number of Elements for training: ', NumberOfElements)
     print('dataset length: ', len(dataset))
 
