@@ -9,8 +9,11 @@ import collections
 import os
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import ExtraTreesRegressor
+from sklearn.ensemble import BaggingRegressor
+from sklearn.ensemble import GradientBoostingRegressor as GBR
 from sklearn import linear_model
 from sklearn import tree
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -58,8 +61,9 @@ max_best_number = config['DEFAULT']['max_best_number']
 correlation_threshold_min_value = config['DEFAULT']['correlation_threshold_min_value']
 correlation_threshold_max_value = config['DEFAULT']['correlation_threshold_max_value']
 subfolder_feature_vs_target = config['DEFAULT']['subfolder_feature_vs_target']
-print(type(subfolder_feature_vs_target))
-print(subfolder_feature_vs_target)
+evaluation_metrics_file_name = config['DEFAULT']['evaluation_metrics_file']
+print(type(evaluation_metrics_file_name))
+print(evaluation_metrics_file_name)
 
 #filepath = 'E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv'
 # reading CSV file
@@ -132,6 +136,8 @@ dataframe_high_correlation = make_dataframe_with_high_correlated_value(main_fram
                                                              correlation_threshold_min_value, correlation_threshold_max_value)
 
 
+
+print(type(dataframe_high_correlation))
 current_directory = os.getcwd()
 print('current_directory is: ',current_directory)
 address = 'image_folder'
@@ -149,69 +155,54 @@ print(len(dataframe_high_correlation.columns))
 subfolder_1 = 'feature_vs_target'
 draw_feature_vs_target = draw_feature_vs_target(dataframe_high_correlation,final_directory,subfolder_1)
 
-# for now_num in range(len(dataframe_high_correlation.columns)-1):
-#     col_name = dataframe_high_correlation.columns[now_num]
-#     dataframe_high_correlation.iloc[0:100].plot(dataframe_high_correlation.columns[now_num],dataframe_high_correlation.columns[-1])
-#     plt.title('title is '+str(col_name))
-
-
-df = dataframe_date_time_type(dataframe_datetime)
-
-dict_of_dates = {k: v for k, v in df.groupby('Date')}
-dict_of_day_type = {k:v for k,v in df.groupby('TypeofDAY')}
-dict_of_day_name = {k:v for k,v in df.groupby('day_name')}
-
-
-date_key_value = collections.OrderedDict(dict_of_dates)
-day_type_key_value = collections.OrderedDict(dict_of_day_type)
-day_name_key_value = collections.OrderedDict(dict_of_day_name)
-
-draw_graph_date = draw_graph(date_key_value,dict_of_dates, target_column,final_directory, subfolder_name = 'date_fig')
-draw_graph_week = draw_graph(day_type_key_value,dict_of_day_type, target_column,final_directory, subfolder_name = 'week_fig')
-draw_graph_day = draw_graph(day_name_key_value,dict_of_day_name, target_column,final_directory, subfolder_name = 'day_fig')
+# df = dataframe_date_time_type(dataframe_datetime)
+#
+# dict_of_dates = {k: v for k, v in df.groupby('Date')}
+# dict_of_day_type = {k:v for k,v in df.groupby('TypeofDAY')}
+# dict_of_day_name = {k:v for k,v in df.groupby('day_name')}
+#
+#
+# date_key_value = collections.OrderedDict(dict_of_dates)
+# day_type_key_value = collections.OrderedDict(dict_of_day_type)
+# day_name_key_value = collections.OrderedDict(dict_of_day_name)
+#
+# draw_graph_date = draw_graph(date_key_value,dict_of_dates, target_column,final_directory, subfolder_name = 'date_fig')
+# draw_graph_week = draw_graph(day_type_key_value,dict_of_day_type, target_column,final_directory, subfolder_name = 'week_fig')
+# draw_graph_day = draw_graph(day_name_key_value,dict_of_day_name, target_column,final_directory, subfolder_name = 'day_fig')
 
 
 train_input, train_output, test_input, test_output = make_dataset(dataframe_high_correlation)
 
 #s_array = dataframe_high_correlation.values
 model_list = [LinearRegression(),linear_model.Lasso(alpha=0.1),linear_model.Ridge(alpha=.5),
-              linear_model.BayesianRidge(), tree.DecisionTreeRegressor(max_depth=2), ExtraTreesRegressor()]
-name = ['LinearRegression','Lasso','Ridge','BayesianRidge','tree','ExtraTreesRegressor']
+              linear_model.BayesianRidge(), tree.DecisionTreeRegressor(max_depth=2),ExtraTreesRegressor(),
+              BaggingRegressor(ExtraTreesRegressor()),GBR()]
+name = ['LinearRegression','Lasso','Ridge','BayesianRidge','tree','ExtraTreesRegressor','BaggingRegressor','GBR']
 
-model = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output, final_directory)
+model = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output, final_directory, evaluation_metrics_file_name)
 #model = scikit_learn_model(model_list, name, s_array[5000:21000,:-1],s_array[5000:21000,-1],s_array[23000:23500,:-1],s_array[23000:23500,-1], final_directory)
-
-#graph = plot_graph(test_output, predicted_output)
-#evaluate_model = evaluation_metrices(test_output, predicted_output)
-
-
-
-
-
-
-
 
 
 
 # for testing with Neural Network
-lr = 0.01
-
-def lr_schedule(epoch):
-    return lr * (0.1 ** int(epoch / 10))
-
-batch_size=32
-epochs= 30
-
-
-NN_model=NN_model(train_input)
-NN_model.compile(loss='mean_absolute_error', optimizer='adam', metrics=['mean_absolute_error','accuracy'])
-NN_model.summary()
-
-
-NN_train_model = NN_model.fit(train_input, train_output, epochs=epochs, batch_size=batch_size)
-
-predicted_output_NN = NN_model.predict(test_input)
-test_output_NN = np.reshape(test_output,(-1,1))
-
-graph_NN = plot_graph(test_output_NN, predicted_output_NN)
-evaluate_NN = evaluation_metrices(test_output_NN, predicted_output_NN)
+# lr = 0.01
+#
+# def lr_schedule(epoch):
+#     return lr * (0.1 ** int(epoch / 10))
+#
+# batch_size=32
+# epochs= 30
+#
+#
+# NN_model=NN_model(train_input)
+# NN_model.compile(loss='mean_absolute_error', optimizer='adam', metrics=['mean_absolute_error','accuracy'])
+# NN_model.summary()
+#
+#
+# NN_train_model = NN_model.fit(train_input, train_output, epochs=epochs, batch_size=batch_size)
+#
+# predicted_output_NN = NN_model.predict(test_input)
+# test_output_NN = np.reshape(test_output,(-1,1))
+#
+# graph_NN = plot_graph(test_output_NN, predicted_output_NN)
+# evaluate_NN = evaluation_metrices(test_output_NN, predicted_output_NN)

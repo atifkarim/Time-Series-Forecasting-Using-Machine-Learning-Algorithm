@@ -289,7 +289,7 @@ def draw_graph(dictionary_value, dictionary, target, path, subfolder_name):
 
         plt.rcParams['figure.figsize'] = (20, 10)
         plt.savefig(fig_location + '/' + str(i) + '.jpg')
-
+        plt.show()
 
 
 def draw_feature_vs_target(dataframe,final_directory,subfolder):
@@ -311,3 +311,4 @@ def draw_feature_vs_target(dataframe,final_directory,subfolder):
         plt.title('title is ' + str(col_name)+' vs '+str(y_axis))
         plt.rcParams['figure.figsize'] = (20, 10)
         plt.savefig(fig_location + '/' +str(col_name)+' vs '+str(y_axis) + '.jpg')
+        plt.show()
