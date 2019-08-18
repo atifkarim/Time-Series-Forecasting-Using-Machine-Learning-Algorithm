@@ -37,7 +37,7 @@ def make_dataset(dataframe):
 
 
 #(model_list: object, name: object, train_input: object, train_output: object, test_input: object, test_output: object) -> object
-def scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output, final_directory,evaluation_metrics_file_name):
+def scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output, final_directory,evaluation_metrics_file_path):
     for idx, i in enumerate(model_list):
         train_model_1 = i
         print('-------', name[idx])
@@ -45,7 +45,7 @@ def scikit_learn_model(model_list, name, train_input, train_output, test_input, 
         predicted_output = train_model_1.predict(test_input)
         
         graph = plot_graph(test_output, predicted_output,final_directory,name[idx])
-        evaluate_model = evaluation_metrices(test_output, predicted_output,final_directory,name[idx],evaluation_metrics_file_name)
+        evaluate_model = evaluation_metrices(test_output, predicted_output,final_directory,name[idx],evaluation_metrics_file_path)
 
 
 
@@ -108,15 +108,14 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
 
 
 
-def evaluation_metrices(test_output,predicted_output,final_directory,model_name,evaluation_metrics_file_name):
+def evaluation_metrices(test_output,predicted_output,final_directory,model_name,evaluation_metrics_file_path):
     print('r_2 statistic: %.2f' % r2_score(test_output, predicted_output))
     print("Mean_absolute_error: %.2f" % mean_absolute_error(test_output, predicted_output))
     print("Mean squared error: %.2f" % mean_squared_error(test_output, predicted_output))
     RMSE = math.sqrt(mean_squared_error(test_output, predicted_output))
     print('RMSE: ', RMSE)
 
-    file_path = final_directory+'/'+evaluation_metrics_file_name
-    f = open(file_path, 'a')
+    f = open(evaluation_metrics_file_path, 'a')
     f.write(str(model_name)+'\n')
     f.write('r_2 square: '+str(r2_score(test_output, predicted_output))+'\n')
     f.write('MAE: '+str(mean_absolute_error(test_output, predicted_output))+'\n')

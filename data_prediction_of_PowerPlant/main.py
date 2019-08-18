@@ -136,8 +136,6 @@ dataframe_high_correlation = make_dataframe_with_high_correlated_value(main_fram
                                                              correlation_threshold_min_value, correlation_threshold_max_value)
 
 
-
-print(type(dataframe_high_correlation))
 current_directory = os.getcwd()
 print('current_directory is: ',current_directory)
 address = 'image_folder'
@@ -179,7 +177,19 @@ model_list = [LinearRegression(),linear_model.Lasso(alpha=0.1),linear_model.Ridg
               BaggingRegressor(ExtraTreesRegressor()),GBR()]
 name = ['LinearRegression','Lasso','Ridge','BayesianRidge','tree','ExtraTreesRegressor','BaggingRegressor','GBR']
 
-model = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output, final_directory, evaluation_metrics_file_name)
+
+evaluation_metrics_file_path = final_directory+'/'+evaluation_metrics_file_name
+if not os.path.isfile(evaluation_metrics_file_path):
+    f = open(evaluation_metrics_file_path,'a')
+    f.close()
+    print('metrics file now created')
+else:
+    os.remove(evaluation_metrics_file_path)
+    f = open(evaluation_metrics_file_path,'a')
+    f.close()
+    print('metrics file removed and created')
+
+model = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output, final_directory, evaluation_metrics_file_path)
 #model = scikit_learn_model(model_list, name, s_array[5000:21000,:-1],s_array[5000:21000,-1],s_array[23000:23500,:-1],s_array[23000:23500,-1], final_directory)
 
 
