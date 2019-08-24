@@ -99,6 +99,15 @@ def rearrange_frame(dataframe, colname, col_pos):
 # if the blast furnace signal for turbine 9 is zero then no work will be happened.
 # so, remove all the rows where this value will be zero
 
+
+def check_A_B_blast_furnace(dataframe,furnace_signal_column_a,value_A, furnace_signal_column_b,value_B):
+    req_data=dataframe.loc[(dataframe[furnace_signal_column_a]>=value_A) | (dataframe[furnace_signal_column_b]>=value_B)].values
+    req_frame=pd.DataFrame(req_data,columns=dataframe.columns)
+    
+    return req_frame
+
+
+
 def drop_zero_value_row_of_blast_furnace_signal(dataframe, blast_furnace_signal):
     #     dataframe = dataframe.reset_index()
     count = []
@@ -117,6 +126,14 @@ def drop_zero_value_row_of_blast_furnace_signal(dataframe, blast_furnace_signal)
 
 
 # # Now choose the target colum  and check if any value is zero or not. If zero then drop those rows. here taret column is T9's output, signal name is AEWIHO_T9AV2
+
+def no_zero_value_in_target(dataframe, target_column, req_drop_value_target):
+    req_data_1=dataframe.loc[(dataframe[target_column]!=req_drop_value_target)].values
+    req_frame_1=pd.DataFrame(req_data_1,columns=dataframe.columns)
+    
+    return req_frame_1
+
+
 
 
 def drop_zero_value_row_of_target_signal(dataframe, target_signal):
