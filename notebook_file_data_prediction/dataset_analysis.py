@@ -167,6 +167,7 @@ def drop_zero_value_row_of_target_signal(dataframe, target_signal):
     return dataframe_1
 
 
+
 def drop_column_with_same_value(dataframe):
     cols = dataframe.select_dtypes([np.number]).columns
     diff = dataframe[cols].diff().sum()
