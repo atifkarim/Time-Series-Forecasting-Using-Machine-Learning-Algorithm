@@ -15,7 +15,7 @@
       "blast_furnace_signal_a" : "DEWIHOAT9_I0",
       "req_value_of_blast_furnace_A":98,
     "max_best_number": 20,
-    "correlation_threshold_min_value": 0.3,
+    "correlation_threshold_min_value": 0.7,
     "correlation_threshold_max_value": 0.9,
     "image_type": ".jpg",
     "subfolder_feature_vs_target": "feature_vs_target",
