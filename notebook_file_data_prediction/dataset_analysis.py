@@ -18,6 +18,17 @@ def create_dataframe(filepath):
     return test
 
 
+
+def create_dateTime(dataframe):
+    dataframe = dataframe.sort_index()
+    dataframe['dateTime'] = pd.to_datetime(dataframe['longTime'], unit='ms')
+    dataframe.drop(['row ID'], axis = 1)
+    
+    return dataframe
+
+
+
+
 # function for converting timestamp to unixtime and return the ready dataframe
 
 def conversion_timestamp_to_unixtime(initial_dataframe):
