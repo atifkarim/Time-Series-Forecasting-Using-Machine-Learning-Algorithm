@@ -3,17 +3,22 @@
   {
     "file_path": "E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv",
     "file_path_ubuntu":"/home/atif/dataset_26_april_3.csv",
-      "file_path_server":"/home/atif/20_aug_1.csv",
-      "file_path_ubuntu_1":"/home/atif/dataset_26_april_3.csv",
+    "file_path_server":"/home/atif/20_aug_1.csv",
+    "file_path_ubuntu_1":"/home/atif/dataset_26_april_3.csv",
+
+    "file_correlation":"/media/atif/0820209220208930/ms_thesis/dataframe_datetime_feb_march_april_may.csv",
+    "matrix_correlation": "/media/atif/0820209220208930/ms_thesis/high_correlation_feb_march_april_may.csv",
+
+
     "start_point_dataframe": 0,
     "end_point_dataframe": 25000,
     "date_column": "dateTime",
     "target_column" : "AEWIHO_T9AV2",
-      "req_drop_value_target":0,
+    "req_drop_value_target":0,
     "blast_furnace_signal_b" : "DEWIHOBT9_I0",
-      "req_value_of_blast_furnace_B":100,
-      "blast_furnace_signal_a" : "DEWIHOAT9_I0",
-      "req_value_of_blast_furnace_A":98,
+    "req_value_of_blast_furnace_B":100,
+    "blast_furnace_signal_a" : "DEWIHOAT9_I0",
+    "req_value_of_blast_furnace_A":98,
     "max_best_number": 20,
     "correlation_threshold_min_value": 0.5,
     "correlation_threshold_max_value": 0.9,
