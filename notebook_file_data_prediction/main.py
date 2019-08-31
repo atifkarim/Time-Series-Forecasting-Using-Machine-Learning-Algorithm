@@ -1,43 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-# import import_ipynb
-# %run data_analysis_function.ipynb
-
-
-# pd.datetime(df.column, unit ='ms')
-
-
-# In[1]:
-
-
 import numpy as np
 a = np.zeros((156816, 36, 53806), dtype='uint8')
 
-
-# In[2]:
-
-
-# import data_analysis_function
-
-
-# In[3]:
-
-
-# from ipynb.fs.full.data_analysis_function import create_dataframe
-# from ipynb.fs.full.data_analysis_function import conversion_timestamp_to_unixtime
-
-
-# In[4]:
-
-
-# from ipynb.fs.full.data_analysis_function import remove_rw_column
-
-
-# In[2]:
 
 
 import json
@@ -78,22 +41,14 @@ from dataset_analysis import draw_graph
 from dataset_analysis import draw_feature_vs_target
 
 
-# In[3]:
-
-
 from dataset_analysis import remove_rw_column_1
 
-
-# In[4]:
 
 
 from model_file import make_dataset
 from model_file import scikit_learn_model
 from model_file import plot_graph
 from model_file import evaluation_metrices
-
-
-# In[5]:
 
 
 with open('variable_config.json', 'r') as f:
@@ -103,6 +58,10 @@ filepath = config['DEFAULT']['file_path']
 filepath_ubuntu = config['DEFAULT']['file_path_ubuntu']
 filepath_ubuntu_1 = config['DEFAULT']['file_path_ubuntu_1']
 filepath_server = config['DEFAULT']['file_path_server']
+
+file_correlation = config['DEFAULT']['file_correlation']
+matrix_correlation = config['DEFAULT']['matrix_correlation']
+
 start_pos = config['DEFAULT']['start_point_dataframe']
 end_pos = config['DEFAULT']['end_point_dataframe']
 date_column = config['DEFAULT']['date_column']
@@ -120,7 +79,8 @@ evaluation_metrics_file_name = config['DEFAULT']['evaluation_metrics_file']
 # print(type(correlation_threshold_min_value))
 print(correlation_threshold_max_value)
 print(correlation_threshold_min_value)
-
+print(file_correlation)
+print(matrix_correlation)
 
 # In[6]:
 
@@ -784,6 +744,10 @@ correlated_frame = main_correlation
 # main_frame = sklearn_feature_best_dataframe
 # correlated_frame = sklearn_correlation
 
+main_frame = pd.read_csv(file_correlation)
+correlated_frame = pd.read_csv(matrix_correlation)
+
+
 dataframe_high_correlation = make_dataframe_with_high_correlated_value(main_frame,correlated_frame,
                                                              correlation_threshold_min_value, correlation_threshold_max_value)
 
@@ -822,7 +786,6 @@ dataframe_high_correlation.describe()
 
 
 # In[51]:
-
 
 current_directory = os.getcwd()
 print('current_directory is: ',current_directory)
