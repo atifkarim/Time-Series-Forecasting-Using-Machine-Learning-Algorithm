@@ -15,19 +15,24 @@ from matplotlib.pylab import rcParams
 
 def create_dataframe(filepath):
     test = pd.read_csv(filepath)  # here the given csv file is reading
+
     return test
 
 
 
+
+# create datetime and drop rowID column if exists
+
 def create_dateTime(dataframe):
     dataframe = dataframe.sort_index()
     dataframe['dateTime'] = pd.to_datetime(dataframe['longTime'], unit='ms')
-    dataframe.drop(['row ID'], axis = 1)
+    dataframe = dataframe.drop(['longTime'], axis=1)
+    try:
+        dataframe.drop(['row ID'], axis = 1)
+    except:
+        None
     
     return dataframe
-
-
-
 
 # function for converting timestamp to unixtime and return the ready dataframe
 
@@ -65,6 +70,46 @@ def conversion_timestamp_to_unixtime(initial_dataframe):
 
 
 # # be careful here , when perform on a dataframe reset_index then a new column will appear and it is 'index'. No need of it so immediately drop it. for better view please take a look in the previous cell
+
+
+
+# create month, year column to observe dataset from a different point of view.
+
+def distinct_month_1(dataframe, target_column,month_key):
+    array_df = []
+    for i in month_key:
+        req_data_1=dataframe.loc[(dataframe[target_column]==i)]
+        req_frame_1=pd.DataFrame(req_data_1,columns=dataframe.columns)
+        
+        array_df.append(req_frame_1)
+    
+    return array_df
+
+def draw_month(month_key_value, dict_of_month,target_column):
+    for i in month_key_value:
+        value = dict_of_month[i]
+        value.iloc[:].plot(y=[target_column])
+        plt.title('visualization of signal ' + str(target_column) + ' in time of ' + str(i))
+        plt.xlabel('range')
+        plt.ylabel('value')
+
+        plt.rcParams['figure.figsize'] = (5,5)
+        plt.savefig(str(i) + '.jpg')
+        plt.show()
+        
+def create_month(dataframe, target_column_month):
+    dataframe = dataframe.set_index('dateTime')
+    dataframe['year'] = pd.DatetimeIndex(dataframe.index).year
+    dataframe['month'] = pd.DatetimeIndex(dataframe.index).month
+    
+    dict_of_month = {k:v for k,v in dataframe.groupby('month')}
+    month_key_value = collections.OrderedDict(dict_of_month)
+    
+    month_array_df = distinct_month_1(dataframe, target_column_month, month_key_value)
+    
+#     draw_month_fig = draw_month(month_key_value, dict_of_month, target_column)
+    
+    return dataframe, month_array_df
 
 # # Now it's time to alter the dataframe. This will oreder the dataframe in ascending prder with respect to dateTime
 
@@ -121,6 +166,12 @@ def rearrange_frame(dataframe, colname, col_pos):
 # if the blast furnace signal for turbine 9 is zero then no work will be happened.
 # so, remove all the rows where this value will be zero
 
+def check_A_B_blast_furnace_1(dataframe,furnace_signal_column_a,value_A, furnace_signal_column_b,value_B):
+    req_data=dataframe.loc[(dataframe[furnace_signal_column_a]>=value_A) | (dataframe[furnace_signal_column_b]>=value_B)]
+    req_frame=pd.DataFrame(req_data,columns=dataframe.columns)
+    
+    return req_frame
+
 
 def check_A_B_blast_furnace(dataframe,furnace_signal_column_a,value_A, furnace_signal_column_b,value_B):
     req_data=dataframe.loc[(dataframe[furnace_signal_column_a]>=value_A) | (dataframe[furnace_signal_column_b]>=value_B)].values
@@ -148,6 +199,14 @@ def drop_zero_value_row_of_blast_furnace_signal(dataframe, blast_furnace_signal)
 
 
 # # Now choose the target colum  and check if any value is zero or not. If zero then drop those rows. here taret column is T9's output, signal name is AEWIHO_T9AV2
+
+
+def no_zero_value_in_target_1(dataframe, target_column, req_drop_value_target):
+#     req_data_1=dataframe.loc[(dataframe[target_column]!=req_drop_value_target)]
+    req_data_1 = dataframe.loc[(dataframe[target_column]>=60)]
+    req_frame_1=pd.DataFrame(req_data_1,columns=dataframe.columns)
+    
+
 
 def no_zero_value_in_target(dataframe, target_column, req_drop_value_target):
     req_data_1=dataframe.loc[(dataframe[target_column]!=req_drop_value_target)].values
