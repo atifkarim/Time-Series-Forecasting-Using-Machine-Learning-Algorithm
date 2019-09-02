@@ -29,6 +29,9 @@ def create_dateTime(dataframe):
     dataframe = dataframe.drop(['longTime'], axis=1)
     try:
         dataframe.drop(['row ID'], axis = 1)
+        dataframe.drop(['Unnamed: 0'],axis=1)
+#     try:
+#         dataframe.drop(['Unnamed: 0'],axis=1)
     except:
         None
     
@@ -205,6 +208,8 @@ def no_zero_value_in_target_1(dataframe, target_column, req_drop_value_target):
 #     req_data_1=dataframe.loc[(dataframe[target_column]!=req_drop_value_target)]
     req_data_1 = dataframe.loc[(dataframe[target_column]>=60)]
     req_frame_1=pd.DataFrame(req_data_1,columns=dataframe.columns)
+    
+    return req_frame_1
     
 
 
