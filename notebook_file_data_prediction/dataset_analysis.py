@@ -29,9 +29,10 @@ def create_dateTime(dataframe):
     dataframe = dataframe.drop(['longTime'], axis=1)
     try:
         dataframe.drop(['row ID'], axis = 1)
+    except:
+        None
+    try:
         dataframe.drop(['Unnamed: 0'],axis=1)
-#     try:
-#         dataframe.drop(['Unnamed: 0'],axis=1)
     except:
         None
     
