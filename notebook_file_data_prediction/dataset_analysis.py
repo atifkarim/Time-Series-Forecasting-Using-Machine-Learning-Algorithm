@@ -23,19 +23,20 @@ def create_dataframe(filepath):
 
 # create datetime and drop rowID column if exists
 
-def create_dateTime(dataframe):
+def create_dateTime(dataframe, col_a, col_b):
     dataframe = dataframe.sort_index()
     dataframe['dateTime'] = pd.to_datetime(dataframe['longTime'], unit='ms')
     dataframe = dataframe.drop(['longTime'], axis=1)
     try:
-        dataframe.drop(['row ID'], axis = 1)
+        dataframe = dataframe.drop([col_b], axis=1)
     except:
         None
+
     try:
-        dataframe.drop(['Unnamed: 0'],axis=1)
+        dataframe = dataframe.drop([col_a], axis=1)
     except:
         None
-    
+
     return dataframe
 
 # function for converting timestamp to unixtime and return the ready dataframe
