@@ -15,8 +15,15 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import math
 
 
-def make_dataset(dataframe, percentage):
+def make_dataset(dataframe, required_number_of_test_data):
     dataset = np.array(dataframe)
+    
+    go_for_training = int(len(dataset)-required_number_of_test_data)
+    print('go_for_training: ', go_for_training)
+    print('required_number_of_test_data: ', required_number_of_test_data)
+    percentage = go_for_training/int(len(dataset))
+    print('percentage: ',percentage)
+    
     NumberOfElements = int(len(dataset) * percentage)
     print('Number of Elements for training: ', NumberOfElements)
     print('dataset length: ', len(dataset))
@@ -32,7 +39,6 @@ def make_dataset(dataframe, percentage):
     print('test_output shape: ', test_output.shape)
 
     return train_input, train_output, test_input, test_output
-
 
 
 
