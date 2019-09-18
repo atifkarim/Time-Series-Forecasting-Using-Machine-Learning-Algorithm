@@ -74,6 +74,9 @@ def make_dataset_LSTM(PandaDataframe, required_number_of_test_data):
     multiple_ip_test_set = dataset[NumberOfElements:len(dataset)]
 
     multiple_ip_test_set = multiple_ip_test_set[0:200]
+    
+    print('LSTM train set: ', multiple_ip_train_data.shape)
+    print('LSTM test set: ', multiple_ip_test_set.shape)
 
     return multiple_ip_train_data, multiple_ip_test_set
 
@@ -169,7 +172,7 @@ def evaluation_metrices(test_output,predicted_output,final_directory,model_name,
     print('!!!!---------------!!!!----------------!!!!')
 
 
-def NN_model():
+def NN_model(train_input):
     NN_model = Sequential()
     NN_model.add(Dense(128, kernel_initializer='normal',input_dim = train_input.shape[1], activation='relu'))
     NN_model.add(Dense(256, kernel_initializer='normal',activation='relu'))
@@ -179,7 +182,7 @@ def NN_model():
     NN_model.add(Dense(1))
     return NN_model
 
-def LSTM_model(time, rows, cols, channels):
+def LSTM_model(activation_function,time, rows, cols, channels):
     model = Sequential()
     # n_seq, 1, n_steps_2, n_features
     model.add(ConvLSTM2D(filters=64, data_format='channels_last', kernel_size=(1, 2), activation=str(activation_function),
@@ -187,6 +190,8 @@ def LSTM_model(time, rows, cols, channels):
     # model.add(ConvLSTM2D(filters=64,data_format='channels_last', kernel_size=(1,2), activation=str(activation_function)))
     model.add(Flatten())
     model.add(Dense(1))
+    
+    return model
 
 
 def split_sequence(sequence, n_steps):
