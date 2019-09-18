@@ -260,7 +260,15 @@ model = scikit_learn_model(model_list, name, train_input, train_output, test_inp
 # draw_graph_day = draw_graph(day_name_key_value,dict_of_day_name, target_column,final_directory, subfolder_name = '3_day_fig_target')
 
 import sklearn
+from sklearn.model_selection import cross_val_score
 my_model = sklearn.tree.ExtraTreeRegressor()
+scores = cross_val_score(my_model,train_input,train_output,cv=100, scoring='neg_mean_squared_error')
+print(scores)
+mse_scores = -scores
+rmse_scores = np.sqrt(mse_scores)
+print(rmse_scores)
+print(rmse_scores.mean())
+
 my_model.fit(train_input, train_output)
 my_pred = my_model.predict(test_input)
 plt.plot((min(test_output), max(test_output)), (min(my_pred), max(my_pred)), color='red')
