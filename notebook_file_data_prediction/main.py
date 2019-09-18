@@ -30,7 +30,7 @@ from dataset_analysis import draw_graph
 from model_file import make_dataset, scikit_learn_model
 from model_file import plot_graph, evaluation_metrices
 from model_file import NN_model
-from model_file import make_dataset_LSTM, split_sequence
+from model_file import make_dataset_LSTM, split_sequence, LSTM_model
 
 with open('variable_config.json', 'r') as f:
     config = json.load(f)
@@ -62,7 +62,7 @@ number_of_step_lstm = config['DEFAULT']['n_steps_lstm']
 epochs = config['DEFAULT']['epochs']
 batch_size = config['DEFAULT']['batch_size']
 
-print(file_windows_april_may)
+print(correlation_threshold_min_value)
 
 #reading csv file
 initial_dataframe = create_dataframe(file_windows_april_may)
@@ -259,41 +259,68 @@ model = scikit_learn_model(model_list, name, train_input, train_output, test_inp
 # draw_graph_week = draw_graph(day_type_key_value,dict_of_day_type, target_column,final_directory, subfolder_name = '3_week_fig_target')
 # draw_graph_day = draw_graph(day_name_key_value,dict_of_day_name, target_column,final_directory, subfolder_name = '3_day_fig_target')
 
-import sklearn
+#train_output_cv = np.reshape(train_output,(-1,1))
 from sklearn.model_selection import cross_val_score
-my_model = sklearn.tree.ExtraTreeRegressor()
-scores = cross_val_score(my_model,train_input,train_output,cv=100, scoring='neg_mean_squared_error')
-print(scores)
-mse_scores = -scores
-rmse_scores = np.sqrt(mse_scores)
-print(rmse_scores)
-print(rmse_scores.mean())
 
-my_model.fit(train_input, train_output)
-my_pred = my_model.predict(test_input)
-plt.plot((min(test_output), max(test_output)), (min(my_pred), max(my_pred)), color='red')
-plt.scatter(test_output, my_pred, color='blue')
+for index, value in enumerate(model_list):
+    
+    scores_r2 = cross_val_score(value,train_input,train_output,cv=10, scoring='r2')
+    scores = cross_val_score(value,train_input,train_output,cv=10, scoring='neg_mean_squared_error')
+    mse_scores = -scores
+    rmse_scores = np.sqrt(mse_scores)
+    print(name[index],'--'*5,scores_r2.mean())
+    print(name[index],'--'*5,rmse_scores.mean())
+    f = open(evaluation_metrics_file_path, 'a')
+    f.write(str(name[index])+'\t'+'RMSE: '+str(rmse_scores.mean())+'\n')
+    f.write(str(name[index])+'\t'+'r_2 square: '+str(scores_r2.mean())+'\n')
+    f.write('\n')
+    f.close()
+
+#from sklearn.ensemble import RandomForestRegressor
+#from sklearn.model_selection import KFold
+#kf = KFold(n_splits = 5, shuffle = True)
+##rf_reg = RandomForestRegressor()
+#scores = []
+#for i in range(5):
+#    result = next(kf.split(train_input), None)
+#    print(result)
+#    x_train = train_input[result[0]]
+#    print(x_train)
+#    x_test = train_input[result[1]]
+#    y_train = train_output[result[0]]
+#    y_test = train_output[result[1]]
+#    model = my_model.fit(x_train,y_train)
+#    predictions = my_model.predict(x_test)
+#    np.append(scores,model.score(x_test,y_test))
+#print('Scores from each Iteration: ', scores)
+#print('Average K-Fold Score :' , np.mean(scores))
+
+
+#my_model.fit(train_input, train_output)
+#my_pred = my_model.predict(test_input)
+#plt.plot((min(test_output), max(test_output)), (min(my_pred), max(my_pred)), color='red')
+#plt.scatter(test_output, my_pred, color='blue')
 
 # from sklearn import linear_model
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-import math
-print('r_2 statistic: %.2f' % r2_score(test_output,my_pred))
-print("Mean_absolute_error: %.2f" % mean_absolute_error(test_output,my_pred))
-print("Mean squared error: %.2f" % mean_squared_error(test_output,my_pred))
-RMSE=math.sqrt(mean_squared_error(test_output,my_pred))
-print('RMSE: ',RMSE)
+#from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+#import math
+#print('r_2 statistic: %.2f' % r2_score(test_output,my_pred))
+#print("Mean_absolute_error: %.2f" % mean_absolute_error(test_output,my_pred))
+#print("Mean squared error: %.2f" % mean_squared_error(test_output,my_pred))
+#RMSE=math.sqrt(mean_squared_error(test_output,my_pred))
+#print('RMSE: ',RMSE)
 
 
 # # Neural Network
-lr = 0.01
-
-def lr_schedule(epoch):
-    return lr * (0.1 ** int(epoch / 10))
+#lr = 0.01
+#
+#def lr_schedule(epoch):
+#    return lr * (0.1 ** int(epoch / 10))
 
 batch_size = batch_size
 epochs= epochs
 
-NN_model=NN_model()
+NN_model=NN_model(train_input)
 NN_model.compile(loss='mean_absolute_error', optimizer='adam', metrics=['mean_absolute_error','accuracy'])
 NN_model.summary()
 NN_model.fit(train_input, train_output, epochs=epochs, batch_size=batch_size)
@@ -314,23 +341,19 @@ test_output_NN.shape
 plot_graph(test_output_NN, predicted_output_NN, final_directory,'Neural_Network')
 evaluation_metrices(test_output_NN,predicted_output_NN,final_directory,'Neural Netowrk', evaluation_metrics_file_path)
 
-
 # # LSTM
 
 
-from numpy import array
-from keras.models import Sequential
-from keras.layers import LSTM
-from keras.layers import Dense, Dropout
-from keras.layers import Flatten
-from keras.layers import ConvLSTM2D
+#from numpy import array
+#from keras.models import Sequential
+#from keras.layers import LSTM
+#from keras.layers import Dense, Dropout
+#from keras.layers import Flatten
+#from keras.layers import ConvLSTM2D
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
-from keras import callbacks
+#from keras import callbacks
 
 multiple_ip_train_data, multiple_ip_test_set = make_dataset_LSTM(dataframe_high_correlation, required_number_of_test_data)
-
-print('train_data_conv shape: ', multiple_ip_train_data.shape)
-print('test_data_conv shape: ', multiple_ip_test_set.shape)
 
 # split into samples
 X_Conv_Lstm, y_Conv_Lstm = split_sequence(multiple_ip_train_data, number_of_step_lstm)
@@ -360,25 +383,25 @@ print('X_Conv_Lstm_train shape: ',X_Conv_Lstm_train.shape,'\tX_Conv_Lstm_train s
 lr = 0.01
 
 def lr_schedule(epoch):
-#     print('epoch value: ', epoch)
+    print('epoch value: ', epoch)
     lr_1 = lr * (0.1 ** int(epoch / 10))
-#     print('now lr_1: ', lr_1)
+    print('now lr_1: ', lr_1)
     return lr_1
 
 batch_size = batch_size
-epochs = epochs
+epochs = 4
 activation_function = 'relu'
 
 
 # In[75]:
 
 
-model = Sequential()
-# n_seq, 1, n_steps_2, n_features
-model.add(ConvLSTM2D(filters=64,data_format='channels_last', kernel_size=(1,2), activation=str(activation_function), input_shape=(time,rows,cols,channels),return_sequences=False))
-# model.add(ConvLSTM2D(filters=64,data_format='channels_last', kernel_size=(1,2), activation=str(activation_function)))
-model.add(Flatten())
-model.add(Dense(1))
+model = LSTM_model(activation_function, time, rows, cols, channels)
+## n_seq, 1, n_steps_2, n_features
+#model.add(ConvLSTM2D(filters=64,data_format='channels_last', kernel_size=(1,2), activation=str(activation_function), input_shape=(time,rows,cols,channels),return_sequences=False))
+## model.add(ConvLSTM2D(filters=64,data_format='channels_last', kernel_size=(1,2), activation=str(activation_function)))
+#model.add(Flatten())
+#model.add(Dense(1))
 model.compile(optimizer='adam', loss='mse',metrics=['accuracy'])
 
 train_model=model.fit(X_Conv_Lstm_train, y_Conv_Lstm, batch_size=batch_size, epochs=epochs, verbose=1,
