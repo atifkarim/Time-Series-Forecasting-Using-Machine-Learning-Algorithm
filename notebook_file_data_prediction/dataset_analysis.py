@@ -9,7 +9,7 @@ import collections
 import os
 import shutil
 # get_ipython().run_line_magic('matplotlib', 'inline')
-from matplotlib.pylab import rcParams
+#from matplotlib.pylab import rcParams
 
 # # function to read the csv file
 
@@ -17,8 +17,6 @@ def create_dataframe(filepath):
     test = pd.read_csv(filepath)  # here the given csv file is reading
 
     return test
-
-
 
 
 # create datetime and drop rowID column if exists
@@ -77,20 +75,20 @@ def conversion_timestamp_to_unixtime(initial_dataframe):
 # # be careful here , when perform on a dataframe reset_index then a new column will appear and it is 'index'. No need of it so immediately drop it. for better view please take a look in the previous cell
 
 
-
 # create month, year column to observe dataset from a different point of view.
 
-def distinct_month_1(dataframe, target_column,month_key):
+def distinct_month_1(dataframe, target_column, month_key):
     array_df = []
     for i in month_key:
-        req_data_1=dataframe.loc[(dataframe[target_column]==i)]
-        req_frame_1=pd.DataFrame(req_data_1,columns=dataframe.columns)
-        
+        req_data_1 = dataframe.loc[(dataframe[target_column] == i)]
+        req_frame_1 = pd.DataFrame(req_data_1, columns=dataframe.columns)
+
         array_df.append(req_frame_1)
-    
+
     return array_df
 
-def draw_month(month_key_value, dict_of_month,target_column):
+
+def draw_month(month_key_value, dict_of_month, target_column):
     for i in month_key_value:
         value = dict_of_month[i]
         value.iloc[:].plot(y=[target_column])
@@ -98,48 +96,58 @@ def draw_month(month_key_value, dict_of_month,target_column):
         plt.xlabel('range')
         plt.ylabel('value')
 
-        plt.rcParams['figure.figsize'] = (5,5)
+        plt.rcParams['figure.figsize'] = (5, 5)
         plt.savefig(str(i) + '.jpg')
         plt.show()
-        
+
+
 def create_month(dataframe, target_column_month):
     dataframe = dataframe.set_index('dateTime')
     dataframe['year'] = pd.DatetimeIndex(dataframe.index).year
     dataframe['month'] = pd.DatetimeIndex(dataframe.index).month
-    
-    dict_of_month = {k:v for k,v in dataframe.groupby('month')}
+
+    dict_of_month = {k: v for k, v in dataframe.groupby('month')}
     month_key_value = collections.OrderedDict(dict_of_month)
-    
+
     month_array_df = distinct_month_1(dataframe, target_column_month, month_key_value)
-    
-#     draw_month_fig = draw_month(month_key_value, dict_of_month, target_column)
-    
+
+    #     draw_month_fig = draw_month(month_key_value, dict_of_month, target_column)
+
     return dataframe, month_array_df
 
-# # Now it's time to alter the dataframe. This will oreder the dataframe in ascending prder with respect to dateTime
+
+def specific_month_df(dataframe, target_column_month):
+    req_data_month = dataframe.loc[(dataframe[target_column_month] == 4) | (dataframe[target_column_month] == 5)]
+    #     req_data_month=dataframe.loc[(dataframe[target_column_month]==2|3) ]
+    req_frame_month = pd.DataFrame(req_data_month, columns=dataframe.columns)
+
+    return req_frame_month
 
 
-# here using test_new_1 as it has no row ID column and also no problematic value
-
-
-def remove_rw_column(dataframe):
-    new_variable = []
-    for i in dataframe:
-        x = i[:2]
-        if x != 'RW':
-            new_variable = np.append(new_variable, i)
-    return new_variable
-
-
-def remove_rw_column_1(dataframe,req_string):
-    new_variable = []
-    for i in dataframe:
-        x = i[:2]
-        if x != req_string:
-            new_variable = np.append(new_variable, i)
-    
-    dataframe = dataframe.iloc[:][new_variable]
+def drop_month_year(dataframe):
+    #     dataframe = dataframe.drop(['year','month'], axis=1)
+    dataframe = dataframe.reset_index()
     return dataframe
+
+
+# def remove_rw_column(dataframe):
+#     new_variable = []
+#     for i in dataframe:
+#         x = i[:2]
+#         if x != 'RW':
+#             new_variable = np.append(new_variable, i)
+#     return new_variable
+#
+#
+# def remove_rw_column_1(dataframe,req_string):
+#     new_variable = []
+#     for i in dataframe:
+#         x = i[:2]
+#         if x != req_string:
+#             new_variable = np.append(new_variable, i)
+#
+#     dataframe = dataframe.iloc[:][new_variable]
+#     return dataframe
 
 
 def alter_time(dataframe, start_pos, end_pos):
@@ -178,29 +186,29 @@ def check_A_B_blast_furnace_1(dataframe,furnace_signal_column_a,value_A, furnace
     return req_frame
 
 
-def check_A_B_blast_furnace(dataframe,furnace_signal_column_a,value_A, furnace_signal_column_b,value_B):
-    req_data=dataframe.loc[(dataframe[furnace_signal_column_a]>=value_A) | (dataframe[furnace_signal_column_b]>=value_B)].values
-    req_frame=pd.DataFrame(req_data,columns=dataframe.columns)
-    
-    return req_frame
+# def check_A_B_blast_furnace(dataframe,furnace_signal_column_a,value_A, furnace_signal_column_b,value_B):
+#     req_data=dataframe.loc[(dataframe[furnace_signal_column_a]>=value_A) | (dataframe[furnace_signal_column_b]>=value_B)].values
+#     req_frame=pd.DataFrame(req_data,columns=dataframe.columns)
+#
+#     return req_frame
 
 
 
-def drop_zero_value_row_of_blast_furnace_signal(dataframe, blast_furnace_signal):
-    #     dataframe = dataframe.reset_index()
-    count = []
-    print(blast_furnace_signal)
-    for idx_blast_furnace, val_blast_furnace in enumerate(dataframe[blast_furnace_signal]):
-        if val_blast_furnace != 100:
-            count = np.append(count, idx_blast_furnace)
-    print('size of count array here: ', count.size)
-
-    if count.size > 0:
-        dataframe_1 = dataframe.drop(count, axis=0)  # axis= 0 means row indiated. 1 means column indicated
-    else:
-        dataframe_1 = dataframe
-    dataframe_1 = dataframe_1.drop([blast_furnace_signal], axis=1)  # dropping the column. because all value are same
-    return dataframe_1
+# def drop_zero_value_row_of_blast_furnace_signal(dataframe, blast_furnace_signal):
+#     #     dataframe = dataframe.reset_index()
+#     count = []
+#     print(blast_furnace_signal)
+#     for idx_blast_furnace, val_blast_furnace in enumerate(dataframe[blast_furnace_signal]):
+#         if val_blast_furnace != 100:
+#             count = np.append(count, idx_blast_furnace)
+#     print('size of count array here: ', count.size)
+#
+#     if count.size > 0:
+#         dataframe_1 = dataframe.drop(count, axis=0)  # axis= 0 means row indiated. 1 means column indicated
+#     else:
+#         dataframe_1 = dataframe
+#     dataframe_1 = dataframe_1.drop([blast_furnace_signal], axis=1)  # dropping the column. because all value are same
+#     return dataframe_1
 
 
 # # Now choose the target colum  and check if any value is zero or not. If zero then drop those rows. here taret column is T9's output, signal name is AEWIHO_T9AV2
@@ -215,34 +223,39 @@ def no_zero_value_in_target_1(dataframe, target_column, req_drop_value_target):
     
 
 
-def no_zero_value_in_target(dataframe, target_column, req_drop_value_target):
-    req_data_1=dataframe.loc[(dataframe[target_column]!=req_drop_value_target)].values
-    req_frame_1=pd.DataFrame(req_data_1,columns=dataframe.columns)
-    
-    return req_frame_1
+# def no_zero_value_in_target(dataframe, target_column, req_drop_value_target):
+#     req_data_1=dataframe.loc[(dataframe[target_column]!=req_drop_value_target)].values
+#     req_frame_1=pd.DataFrame(req_data_1,columns=dataframe.columns)
+#
+#     return req_frame_1
 
 
 
 
-def drop_zero_value_row_of_target_signal(dataframe, target_signal):
-    count = []
-    for idx_blast_furnace, val_blast_furnace in enumerate(dataframe[target_signal]):
-        if val_blast_furnace == 0:
-            count = np.append(count, idx_blast_furnace)
-    print(type(count))
-    for i in count:
-        if i > 24222:
-            print(i)
-    print('size of count array: ', len(count))
+# def drop_zero_value_row_of_target_signal(dataframe, target_signal):
+#     count = []
+#     for idx_blast_furnace, val_blast_furnace in enumerate(dataframe[target_signal]):
+#         if val_blast_furnace == 0:
+#             count = np.append(count, idx_blast_furnace)
+#     print(type(count))
+#     for i in count:
+#         if i > 24222:
+#             print(i)
+#     print('size of count array: ', len(count))
+#
+#     if len(count) > 0:
+#         dataframe_1 = dataframe.drop(count, axis=0)  # axis= 0 means row indiated. 1 means column indicated
+#     else:
+#         dataframe_1 = dataframe
+#     dataframe_1 = dataframe_1.drop(dataframe_1.columns[0], axis=1)  # generally after resetting index the former index
+#     # take place the first place of the column. so removing it.
+#     return dataframe_1
 
-    if len(count) > 0:
-        dataframe_1 = dataframe.drop(count, axis=0)  # axis= 0 means row indiated. 1 means column indicated
-    else:
-        dataframe_1 = dataframe
-    dataframe_1 = dataframe_1.drop(dataframe_1.columns[0], axis=1)  # generally after resetting index the former index
-    # take place the first place of the column. so removing it.
-    return dataframe_1
+def dataframe_reset_index(dataframe):
+    dataframe = dataframe.reset_index()
+    dataframe = dataframe.drop(['index'], axis=1)
 
+    return dataframe
 
 
 def drop_column_with_same_value(dataframe):
@@ -273,19 +286,30 @@ def drop_nan_value(dataframe):
 
     return dataframe_1
 
+# def drop_row(dataframe):
+#     for i in dataframe:
+#         #        print(i)
+#         dataframe_drop_row_consecutive_same_value = dataframe.loc[dataframe[i].shift() != dataframe[i]]
+#
+#     return dataframe_drop_row_consecutive_same_value
 
-def drop_row(dataframe):
-    for i in dataframe:
-        #        print(i)
-        dataframe_drop_row_consecutive_same_value = dataframe.loc[dataframe[i].shift() != dataframe[i]]
+def drop_unique_valued_columns(dataframe):
+    nunique = dataframe.apply(pd.Series.nunique)
+    cols_to_drop = nunique[nunique == 1].index
+    dataframe = dataframe.drop(cols_to_drop, axis=1)
 
-    return dataframe_drop_row_consecutive_same_value
+    return dataframe
+
 
 
 def drop_string_column(dataframe):
     drop_object = dataframe.select_dtypes(exclude=['object'])
 
     return drop_object
+
+def dataframe_datetime(dataframe):
+    dataframe_datetime = dataframe.set_index('dateTime')
+    return dataframe_datetime
 
 
 # # All data cleaning process has done. Now feature selection process will come. Before doing this just make a copy of dataframe and set the index as dateTime

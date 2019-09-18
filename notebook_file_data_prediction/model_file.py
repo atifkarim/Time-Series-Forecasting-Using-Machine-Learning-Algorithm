@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import array
 import matplotlib.pyplot as plt
 import os
 import shutil
@@ -13,6 +14,17 @@ from sklearn.neural_network import MLPRegressor
 from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import math
+
+from keras.models import Sequential
+from keras.layers import Dense, Activation, Flatten
+from sklearn.metrics import mean_absolute_error
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint
+
+from keras.models import Sequential
+from keras.layers import LSTM
+from keras.layers import Dense, Dropout
+from keras.layers import Flatten
+from keras.layers import ConvLSTM2D
 
 
 def make_dataset(dataframe, required_number_of_test_data):
@@ -38,7 +50,31 @@ def make_dataset(dataframe, required_number_of_test_data):
     test_output = dataset[NumberOfElements:len(dataset), -1]
     print('test_output shape: ', test_output.shape)
 
+    test_input = test_input[0:200]
+    test_output = test_output[0:200]
+
     return train_input, train_output, test_input, test_output
+
+
+def make_dataset_LSTM(PandaDataframe, required_number_of_test_data):
+    dataset = np.array(PandaDataframe)
+
+    go_for_training = int(len(dataset) - required_number_of_test_data)
+    print('go_for_training: ', go_for_training)
+    print('required_number_of_test_data: ', required_number_of_test_data)
+    percentage = go_for_training / int(len(dataset))
+    print('percentage: ', percentage)
+
+    NumberOfElements = int(len(dataset) * percentage)
+    print('dataset length: ', len(dataset))
+    print('Number of Elements for training: ', NumberOfElements)
+
+    multiple_ip_train_data = dataset[0:NumberOfElements]
+    multiple_ip_test_set = dataset[NumberOfElements:len(dataset)]
+
+    multiple_ip_test_set = multiple_ip_test_set[0:200]
+
+    return multiple_ip_train_data, multiple_ip_test_set
 
 
 
@@ -130,4 +166,39 @@ def evaluation_metrices(test_output,predicted_output,final_directory,model_name,
     f.write('\n')
     f.close()
     print('!!!!---------------!!!!----------------!!!!')
+
+
+def NN_model():
+    NN_model = Sequential()
+    NN_model.add(Dense(128, kernel_initializer='normal',input_dim = train_input.shape[1], activation='relu'))
+    NN_model.add(Dense(256, kernel_initializer='normal',activation='relu'))
+    NN_model.add(Dense(256, kernel_initializer='normal',activation='relu'))
+    NN_model.add(Dense(256, kernel_initializer='normal',activation='relu'))
+#     NN_model.add(Dense(1, kernel_initializer='normal',activation='relu'))
+    NN_model.add(Dense(1))
+    return NN_model
+
+def LSTM_model(time, rows, cols, channels):
+    model = Sequential()
+    # n_seq, 1, n_steps_2, n_features
+    model.add(ConvLSTM2D(filters=64, data_format='channels_last', kernel_size=(1, 2), activation=str(activation_function),
+                   input_shape=(time, rows, cols, channels), return_sequences=False))
+    # model.add(ConvLSTM2D(filters=64,data_format='channels_last', kernel_size=(1,2), activation=str(activation_function)))
+    model.add(Flatten())
+    model.add(Dense(1))
+
+
+def split_sequence(sequence, n_steps):
+   X, y = list(), list()
+   for i in range(len(sequence)):
+       # find the end of this pattern
+       end_ix = i + n_steps
+       # check if we are beyond the sequence
+       if end_ix > len(sequence)-1:
+           break
+       # gather input and output parts of the pattern
+       seq_x, seq_y = sequence[i:end_ix,:-1], sequence[end_ix,-1]
+       X.append(seq_x)
+       y.append(seq_y)
+   return array(X), array(y)
 
