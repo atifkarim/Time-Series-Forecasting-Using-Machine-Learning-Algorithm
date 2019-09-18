@@ -46,12 +46,13 @@ def make_dataset(dataframe, required_number_of_test_data):
     print('train_output shape: ', train_output.shape)
 
     test_input = dataset[NumberOfElements:len(dataset), 0:-1]
-    print('test_input shape: ', test_input.shape)
     test_output = dataset[NumberOfElements:len(dataset), -1]
-    print('test_output shape: ', test_output.shape)
+    
 
     test_input = test_input[0:200]
     test_output = test_output[0:200]
+    print('test_input shape: ', test_input.shape)
+    print('test_output shape: ', test_output.shape)
 
     return train_input, train_output, test_input, test_output
 

@@ -64,8 +64,8 @@ batch_size = config['DEFAULT']['batch_size']
 
 print(file_windows_april_may)
 
-
-initial_dataframe = create_dataframe(filepath_server)
+#reading csv file
+initial_dataframe = create_dataframe(file_windows_april_may)
 
 df_1 = create_dateTime(initial_dataframe,'row ID','Unnamed: 0')
 
@@ -96,7 +96,7 @@ req_column_name = [date_column, target_column]
 rearranged_dataframe = rearrange_frame(multivariate_data,req_column_name,index_array)
 
 dataframe_no_zero_value_blast_furnace = check_A_B_blast_furnace_1(rearranged_dataframe, furnace_signal_column_a, value_A,
-                                                               furnace_signal_column_b, value_B)
+                                                                  furnace_signal_column_b, value_B)
 
 dataframe_no_zero_value_target_column = no_zero_value_in_target_1(dataframe_no_zero_value_blast_furnace,target_column, req_drop_value_target)
 
@@ -129,7 +129,7 @@ plt.plot(dataframe_no_zero_value_target_column_2[target_column], color = 'blue')
 plt.plot(dataframe_no_zero_value_target_column_2[furnace_signal_column_a], color = 'red')
 plt.plot(dataframe_no_zero_value_target_column_2[furnace_signal_column_b], color = 'green')
 # plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='upper left')
-# plt.xlim(0,initial_dataframe.shape[0]+10)
+plt.xlim(0,dataframe_no_zero_value_target_column_2.shape[0]+10)
 # plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (8, 5)
 plt.show(block=False)
@@ -148,7 +148,7 @@ dataframe_drop_column_with_same_value = drop_unique_valued_columns(multivariate_
 # dataframe_drop_column_with_same_value = multivariate_data_drop_nan.drop(multivariate_data_drop_nan.std()[(multivariate_data_drop_nan.std() == 0)].index, axis=1)
 # dataframe_drop_column_with_same_value = drop_column_with_same_value(multivariate_data_drop_nan)
 
-dataframe_drop_column_with_same_value.dtypes
+print(dataframe_drop_column_with_same_value.dtypes)
 
 # Drop the column who has 'objet' type value
 dataframe_no_string = drop_string_column(dataframe_drop_column_with_same_value)
