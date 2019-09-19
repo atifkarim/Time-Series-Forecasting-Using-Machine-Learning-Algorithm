@@ -49,8 +49,8 @@ def make_dataset(dataframe, required_number_of_test_data):
     test_output = dataset[NumberOfElements:len(dataset), -1]
     
 
-    test_input = test_input[0:200]
-    test_output = test_output[0:200]
+    #test_input = test_input[0:200]
+    #test_output = test_output[0:200]
     print('test_input shape: ', test_input.shape)
     print('test_output shape: ', test_output.shape)
 
