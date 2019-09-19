@@ -3,9 +3,12 @@
   {
     "file_path": "E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv",
     "file_path_ubuntu":"/home/atif/dataset_26_april_3.csv",
-    "file_path_server":"/home/atif/20_aug_1.csv",
     "file_path_ubuntu_1":"/home/atif/dataset_26_april_3.csv",
     "feb_march_file":"/home/atif/feb_march_1.csv",
+      
+    "file_path_server_feb_march":"/home/atif/feb_march_1.csv",
+    "file_path_server_april_may":"/home/atif/april_may_1.csv",
+    "file_path_server_june_july":"/home/atif/june_july_1.csv",
 
     "file_windows_feb_march": "F:/ms_thesis/sliced_dataframe/feb_march_1.csv",
     "file_windows_april_may": "F:/ms_thesis/sliced_dataframe/april_may_1.csv",
@@ -30,7 +33,7 @@
     "image_type": ".jpg",
     "subfolder_feature_vs_target": "feature_vs_target",
     "evaluation_metrics_file": "evaluation_metrics.txt",
-    "required_number_of_test_data": 500,
+    "required_number_of_test_data": 1000,
     "n_steps_lstm" : 2,
     "epochs": 30,
     "batch_size": 32
