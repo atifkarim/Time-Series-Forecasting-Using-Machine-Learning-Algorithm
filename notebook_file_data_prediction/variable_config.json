@@ -2,7 +2,7 @@
   "DEFAULT":
   {
     "file_path": "E:/University of Bremen MSc/masters_thesis/IAT_sebastian/dataset_26_april_3.csv",
-    "file_path_ubuntu":"/home/atif/dataset_26_april_3.csv",
+    "file_path_ubuntu":"/home/atif/20_aug_1.csv",
     "file_path_ubuntu_1":"/home/atif/dataset_26_april_3.csv",
     "feb_march_file":"/home/atif/feb_march_1.csv",
       
@@ -33,7 +33,7 @@
     "image_type": ".jpg",
     "subfolder_feature_vs_target": "feature_vs_target",
     "evaluation_metrics_file": "evaluation_metrics.txt",
-    "required_number_of_test_data": 1000,
+    "required_number_of_test_data": 200,
     "n_steps_lstm" : 2,
     "epochs": 30,
     "batch_size": 32

@@ -96,12 +96,12 @@ def draw_month(month_key_value, dict_of_month, target_column):
         plt.xlabel('range')
         plt.ylabel('value')
 
-        plt.rcParams['figure.figsize'] = (5, 5)
+        plt.rcParams['figure.figsize'] = (12, 5)
         plt.savefig(str(i) + '.jpg')
         plt.show()
 
 
-def create_month(dataframe, target_column_month):
+def create_month(dataframe, target_column_month,target_column):
     dataframe = dataframe.set_index('dateTime')
     dataframe['year'] = pd.DatetimeIndex(dataframe.index).year
     dataframe['month'] = pd.DatetimeIndex(dataframe.index).month
@@ -111,13 +111,13 @@ def create_month(dataframe, target_column_month):
 
     month_array_df = distinct_month_1(dataframe, target_column_month, month_key_value)
 
-    #     draw_month_fig = draw_month(month_key_value, dict_of_month, target_column)
+    #draw_month_fig = draw_month(month_key_value, dict_of_month, target_column)
 
     return dataframe, month_array_df
 
 
 def specific_month_df(dataframe, target_column_month):
-    req_data_month = dataframe.loc[(dataframe[target_column_month] == 4) | (dataframe[target_column_month] == 5)]
+    req_data_month = dataframe.loc[(dataframe[target_column_month] == 2) | (dataframe[target_column_month] == 3)]
     #     req_data_month=dataframe.loc[(dataframe[target_column_month]==2|3) ]
     req_frame_month = pd.DataFrame(req_data_month, columns=dataframe.columns)
 
