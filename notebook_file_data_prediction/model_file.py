@@ -73,7 +73,7 @@ def make_dataset_LSTM(PandaDataframe, required_number_of_test_data):
     multiple_ip_train_data = dataset[0:NumberOfElements]
     multiple_ip_test_set = dataset[NumberOfElements:len(dataset)]
 
-    multiple_ip_test_set = multiple_ip_test_set[0:200]
+#    multiple_ip_test_set = multiple_ip_test_set[0:200]
     
     print('LSTM train set: ', multiple_ip_train_data.shape)
     print('LSTM test set: ', multiple_ip_test_set.shape)
@@ -172,6 +172,7 @@ def evaluation_metrices(test_output,predicted_output,final_directory,model_name,
     print('!!!!---------------!!!!----------------!!!!')
 
 
+
 def NN_model(train_input):
     NN_model = Sequential()
     NN_model.add(Dense(128, kernel_initializer='normal',input_dim = train_input.shape[1], activation='relu'))
@@ -194,6 +195,18 @@ def LSTM_model(activation_function,time, rows, cols, channels):
     return model
 
 
+def vanilla_lstm(n_steps_vanilla, n_features_vanilla):
+    model = Sequential()
+#     model.add(LSTM(units=100, activation='relu', batch_input_shape=(8,n_steps_vanilla,n_features_vanilla)))
+    model.add(LSTM(units=100, activation='relu', input_shape=(n_steps_vanilla, n_features_vanilla),return_sequences=False)) # make False if use only 1 layer.
+                                                                                                                                                                #make True if need multi layer
+#     model.add(LSTM(100,return_sequences=True))
+#     model.add(LSTM(100))
+#     model.add(Dropout(0.5))
+    model.add(Dense(1))
+    return model
+
+
 def split_sequence(sequence, n_steps):
    X, y = list(), list()
    for i in range(len(sequence)):
@@ -208,3 +221,17 @@ def split_sequence(sequence, n_steps):
        y.append(seq_y)
    return array(X), array(y)
 
+
+def plot_history(train_model_NN, history_graph_NN):
+    # summarize history for accuracy
+    plt.plot(train_model_NN.history['loss'],'-^', color = 'green')
+    plt.plot(train_model_NN.history['val_loss'],'-o', color = 'red')
+
+    # plt.plot(train_model_NN.history['mean_squared_error'],'-^', color = 'green')
+    # plt.plot(train_model_NN.history['val_mean_squared_error'],'-o', color = 'red')
+    # plt.title('model accuracy')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['loss','val_loss'], loc='best')
+    plt.savefig(history_graph_NN+'_loss_vs_epoch.png',bbox_inches='tight')
+    plt.rcParams['figure.figsize'] =(12,5)
