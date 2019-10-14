@@ -14,6 +14,7 @@ data_prediction_of_PowerPlant/.idea
 data_prediction_of_PowerPlant/__init__.py
 data_prediction_of_PowerPlant/image_folder
 **/image_folder
+**/image_folder_1
 **/test_folder
 **/__pycache__
 **/.idea
