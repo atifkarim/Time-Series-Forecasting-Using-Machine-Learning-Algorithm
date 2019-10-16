@@ -1,11 +1,11 @@
 # import numpy as np
 # a = np.zeros((156816, 36, 53806), dtype='uint8')
 import json
-#import collections
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 #import pandas as pd
+#import collections
 
 
 from sklearn.linear_model import LinearRegression
@@ -79,76 +79,103 @@ else:
     print(' has already created',final_directory)
     pass
 
-initial_dataframe = create_dataframe(filepath_server_feb_march)
-df_1 = create_dateTime(initial_dataframe,'row_ID','Unnamed: 0')
-date_df, month_array_df = create_month(df_1, 'month', target_column)
-specific_month_df = specific_month_df(date_df,'month')
-spec_month = drop_month_year(specific_month_df)
 
-print(initial_dataframe.shape)
-plt.plot(initial_dataframe[target_column], color = 'blue')
-plt.plot(initial_dataframe[furnace_signal_column_a], color = 'red')
-plt.plot(initial_dataframe[furnace_signal_column_b], color = 'green')
+
+evaluation_metrics_file_path = final_directory+'/'+evaluation_metrics_file_name
+if not os.path.isfile(evaluation_metrics_file_path):
+    f = open(evaluation_metrics_file_path,'a')
+    f.close()
+    print('metrics file now created')
+else:
+    os.remove(evaluation_metrics_file_path)
+    f = open(evaluation_metrics_file_path,'a')
+    f.close()
+    print('metrics file removed and created')
+    
+
+dataframe_read = create_dataframe(filepath_server_feb_march)
+cols_list = ['longTime',furnace_signal_column_a,furnace_signal_column_b,target_column,'RWWIHOBG9_V0','AEWIGHG9__P0','AEWIGHG9__T0']
+dataframe_sliced = dataframe_read.iloc[:][cols_list]  #this is done here due to overcome the huge time of processing on a big data. cols_list array includes the column which are
+                                                        #highly correlated with the target variable. This highly correlatd info got from the training or first stage of coding.
+                                                        # finding high correlation part is also given later. just uncomment that part to use.
+
+dataframe_with_date = create_dateTime(dataframe_sliced,'row_ID','Unnamed: 0') # here row ID and unnamed have written beacuse slicing the main datfarame got from the IAT department generated
+                                                                # this columns.
+dataframe_include_month, month_array_df = create_month(dataframe_with_date, 'month', target_column) #this code generate month value in numeric order by taing value from dateTime column
+                                                                                                    # january -- 1, february --2 etc.
+dataframe_with_specific_month = specific_month_df(dataframe_include_month,'month') # this line take value from the "month" column and keep only specific month.
+                                                                                    # please take a look in the body of the function.
+dataframe_with_specific_month_reset = drop_month_year(dataframe_with_specific_month) # here, drop of the month column is possible though it it omitted here. No need.
+
+print(dataframe_read.shape)
+plt.plot(dataframe_read[target_column], color = 'blue')
+plt.plot(dataframe_read[furnace_signal_column_a], color = 'red')
+plt.plot(dataframe_read[furnace_signal_column_b], color = 'green')
 plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='best')
 # plt.xlim(0,initial_dataframe.shape[0]+10)
-plt.xticks(np.arange(0,initial_dataframe.shape[0],5000),rotation='vertical')
+plt.xticks(np.arange(0,dataframe_read.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
 #plt.savefig('blast_vs_target_pre.png',bbox_inches='tight')
 plt.rcParams['figure.figsize'] = (12,5)
 
 
-multivariate_data = alter_time(spec_month, start_pos,spec_month.shape[0])
+
+dataframe_ascending = alter_time(dataframe_with_specific_month_reset, start_pos,dataframe_with_specific_month_reset.shape[0]) # this code arrange the dataset in ascending order
+                                                                                                                        # with respect to time (smallest to largest)
 index_array=[0,-1]
 req_column_name = [date_column, target_column]
 # req_column_name = [date_column, furnace_signal_column]
-rearranged_dataframe = rearrange_frame(multivariate_data,req_column_name,index_array)
-dataframe_no_zero_value_blast_furnace = check_A_B_blast_furnace_1(rearranged_dataframe, furnace_signal_column_a, value_A,
-                                                               furnace_signal_column_b, value_B)
+dataframe_rearranged = rearrange_frame(dataframe_ascending,req_column_name,index_array)
+dataframe_clean_furnace_column = check_A_B_blast_furnace_1(dataframe_rearranged, furnace_signal_column_a, value_A,
+                                                               furnace_signal_column_b, value_B) # this line check is there any anamoly in the blast furnace A and B's column
+                                                                                                # and remove that rows
 
 
-dataframe_no_zero_value_target_column = no_zero_value_in_target_1(dataframe_no_zero_value_blast_furnace,
-                                                                  target_column, req_drop_value_target)
+dataframe_clean_target_column = no_zero_value_in_target_1(dataframe_clean_furnace_column,
+                                                                  target_column, req_drop_value_target) # It checks the target column and remove the rows whos value is less than
+                                                                                                        # a minimum value. in this task that was chosen as 60.
 
-dataframe_no_zero_value_target_column_2 = dataframe_reset_index(dataframe_no_zero_value_target_column)
-print(dataframe_no_zero_value_target_column_2.shape)
+dataframe_free_from_furnace_target_column_anamoly = dataframe_reset_index(dataframe_clean_target_column)
+print(dataframe_free_from_furnace_target_column_anamoly .shape)
 
-plt.plot(dataframe_no_zero_value_target_column_2[target_column], color = 'blue')
-plt.plot(dataframe_no_zero_value_target_column_2[furnace_signal_column_a], color = 'red')
-plt.plot(dataframe_no_zero_value_target_column_2[furnace_signal_column_b], color = 'green')
+plt.plot(dataframe_free_from_furnace_target_column_anamoly [target_column], color = 'blue')
+plt.plot(dataframe_free_from_furnace_target_column_anamoly [furnace_signal_column_a], color = 'red')
+plt.plot(dataframe_free_from_furnace_target_column_anamoly [furnace_signal_column_b], color = 'green')
 plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='center left')
 # plt.xlim(0,initial_dataframe.shape[0]+10)
-plt.xticks(np.arange(0,dataframe_no_zero_value_target_column_2.shape[0],5000),rotation='vertical')
+plt.xticks(np.arange(0,dataframe_free_from_furnace_target_column_anamoly .shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
 #plt.savefig('blast_vs_target_post.png',bbox_inches='tight')
 plt.rcParams['figure.figsize'] = (12, 5)
 
 
-multivariate_data_drop_nan = drop_nan_value(dataframe_no_zero_value_target_column_2)
-dataframe_drop_column_with_same_value = drop_unique_valued_columns(multivariate_data_drop_nan)
-dataframe_no_string = drop_string_column(dataframe_drop_column_with_same_value)
-dataframe_no_string.dtypes
-initial_dataframe = None
-date_df = None
-specific_month_df = None
-spec_month = None
-rearranged_dataframe = None
-multivariate_data = None
-dataframe_no_zero_value_blast_furnace = None
-dataframe_no_zero_value_target_column = None
-multivariate_data_drop_nan = None
-dataframe_drop_column_with_same_value = None
+dataframe_drop_nan = drop_nan_value(dataframe_free_from_furnace_target_column_anamoly )
+dataframe_drop_unique_valued_column = drop_unique_valued_columns(dataframe_drop_nan)
+dataframe_drop_string = drop_string_column(dataframe_drop_unique_valued_column)
+dataframe_drop_string.dtypes
+
+dataframe_read = None
+dataframe_with_date = None
+dataframe_with_specific_month = None
+dataframe_with_specific_month_reset = None
+dataframe_ascending = None
+dataframe_rearranged = None
+dataframe_clean_furnace_column = None
+dataframe_clean_target_column = None
+dataframe_drop_nan = None
+dataframe_drop_unique_valued_column = None
 
 
-print(dataframe_no_string.shape)
+print(dataframe_drop_string.shape)
 
-plt.plot(dataframe_no_string[target_column], color = 'blue')
+plt.plot(dataframe_drop_string[target_column], color = 'blue')
 # plt.plot(dataframe_no_string[furnace_signal_column_a], color = 'red')
 # plt.plot(dataframe_no_string[furnace_signal_column_b], color = 'green')
 # plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='upper left')
 plt.legend([target_column], loc='best')
-plt.xticks(np.arange(0,dataframe_no_string.shape[0],1000),rotation='vertical')
+plt.xticks(np.arange(0,dataframe_drop_string.shape[0],1000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
 #plt.savefig('final_target_column.png',bbox_inches='tight')
@@ -157,7 +184,7 @@ plt.ylabel('Value')
 plt.rcParams['figure.figsize'] = (12, 5)
 
 
-dataframe_datetime = dataframe_datetime(dataframe_no_string)
+dataframe_datetime = dataframe_datetime(dataframe_drop_string)
 sklearn_feature_best_dataframe = feature_selection_with_selectKbest(dataframe_datetime,max_best_number)
 
 sklearn_correlation, main_correlation = pearson_correlation(sklearn_feature_best_dataframe, dataframe_datetime)
@@ -169,7 +196,7 @@ correlated_frame = main_correlation
 # correlated_frame = sklearn_correlation
 
 dataframe_high_correlation = make_dataframe_with_high_correlated_value(main_frame,correlated_frame,
-                                                             0.6, correlation_threshold_max_value)
+                                                             correlation_threshold_min_value, correlation_threshold_max_value)
 
 print(dataframe_high_correlation.shape)
 dataframe_high_correlation.describe()
@@ -194,16 +221,6 @@ model_list = [LinearRegression(fit_intercept=True),linear_model.Lasso(alpha=0.1)
               BaggingRegressor(ExtraTreesRegressor()),GBR()]
 name = ['LinearRegression','Lasso','Ridge','BayesianRidge','tree','ExtraTreesRegressor','BaggingRegressor','GBR']
 
-evaluation_metrics_file_path = final_directory+'/'+evaluation_metrics_file_name
-if not os.path.isfile(evaluation_metrics_file_path):
-    f = open(evaluation_metrics_file_path,'a')
-    f.close()
-    print('metrics file now created')
-else:
-    os.remove(evaluation_metrics_file_path)
-    f = open(evaluation_metrics_file_path,'a')
-    f.close()
-    print('metrics file removed and created')
     
 
 model = scikit_learn_model(model_list, name, train_input, train_output, test_input, test_output,
