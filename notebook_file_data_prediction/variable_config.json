@@ -10,13 +10,14 @@
     "file_path_server_april_may":"/home/atif/april_may_1.csv",
     "file_path_server_june_july":"/home/atif/june_july_1.csv",
 
+
+    "file_ubuntu_feb_march": "/media/atif/0820209220208930/ms_thesis/sliced_dataframe/feb_march_1.csv",
+    "file_ubuntu_april_may": "/media/atif/0820209220208930/ms_thesis/sliced_dataframe/april_may_1.csv",
+    "file_ubuntu_june_july": "/media/atif/0820209220208930/ms_thesis/sliced_dataframe/june_july_1.csv",
+
     "file_windows_feb_march": "F:/ms_thesis/sliced_dataframe/feb_march_1.csv",
     "file_windows_april_may": "F:/ms_thesis/sliced_dataframe/april_may_1.csv",
     "file_windows_june_july": "F:/ms_thesis/sliced_dataframe/june_july_1.csv",
-
-    "file_correlation":"/media/atif/0820209220208930/ms_thesis/dataframe_datetime_feb_march_april_may.csv",
-    "matrix_correlation": "/media/atif/0820209220208930/ms_thesis/high_correlation_feb_march_april_may.csv",
-
 
     "start_point_dataframe": 0,
     "end_point_dataframe": 25000,
