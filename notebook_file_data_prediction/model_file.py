@@ -3,28 +3,29 @@ from numpy import array
 import matplotlib.pyplot as plt
 import os
 import shutil
-from sklearn import metrics
-from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import *
-from sklearn.svm import SVR
-from sklearn.ensemble.forest import RandomForestRegressor
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.neural_network import MLPRegressor
-
-from sklearn import linear_model
+# from sklearn import metrics
+# from sklearn.linear_model import LinearRegression
+# from sklearn.ensemble import *
+# from sklearn.svm import SVR
+# from sklearn.ensemble.forest import RandomForestRegressor
+# from sklearn.tree import DecisionTreeRegressor
+# from sklearn.neural_network import MLPRegressor
+#
+# from sklearn import linear_model
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import math
 
-from keras.models import Sequential
-from keras.layers import Dense, Activation, Flatten
+# from keras.models import Sequential
+# from keras.layers import Dense, Activation, Flatten
 from sklearn.metrics import mean_absolute_error
-from keras.callbacks import LearningRateScheduler, ModelCheckpoint
+# from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 
 from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense, Dropout
 from keras.layers import Flatten
 from keras.layers import ConvLSTM2D
+from statsmodels.tsa.arima_model import ARIMA
 
 
 def make_dataset(dataframe, required_number_of_test_data):
@@ -79,6 +80,27 @@ def make_dataset_LSTM(PandaDataframe, required_number_of_test_data):
     print('LSTM test set: ', multiple_ip_test_set.shape)
 
     return multiple_ip_train_data, multiple_ip_test_set
+
+
+
+def make_dataset_arima(PandaDataframe, required_number_of_test_data):
+    dataset = np.array(PandaDataframe)
+
+    go_for_training = int(len(dataset) - required_number_of_test_data)
+    print(go_for_training)
+
+    train_data = dataset[0:go_for_training]
+    test_data = dataset[go_for_training:]
+
+    return train_data, test_data
+
+#Function that calls ARIMA model to fit and forecast the data
+def StartARIMAForecasting(Actual, P, D, Q):
+#     print('from function screaming')
+    model = ARIMA(Actual, order=(P, D, Q))
+    model_fit = model.fit(disp=0)
+    prediction = model_fit.forecast()[0]
+    return prediction
 
 
 
@@ -200,7 +222,7 @@ def vanilla_lstm(n_steps_vanilla, n_features_vanilla):
     model = Sequential()
 #     model.add(LSTM(units=100, activation='relu', batch_input_shape=(8,n_steps_vanilla,n_features_vanilla)))
     model.add(LSTM(units=100, activation='relu', input_shape=(n_steps_vanilla, n_features_vanilla),return_sequences=False)) # make False if use only 1 layer.
-                                                                                                                                                                #make True if need multi layer
+                                                                                                                            # make True if need multi layer
 #     model.add(LSTM(100,return_sequences=True))
 #     model.add(LSTM(100))
 #     model.add(Dropout(0.5))

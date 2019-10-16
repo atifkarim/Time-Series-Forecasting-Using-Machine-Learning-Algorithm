@@ -8,12 +8,14 @@ from sklearn.feature_selection import chi2
 import collections
 import os
 import shutil
+from sklearn.model_selection import cross_val_score
 # get_ipython().run_line_magic('matplotlib', 'inline')
 #from matplotlib.pylab import rcParams
 
-# # function to read the csv file
 
-def create_dataframe(filepath):
+# function to read the csv file
+
+def read_dataframe(filepath):
     test = pd.read_csv(filepath)  # here the given csv file is reading
 
     return test
@@ -116,7 +118,7 @@ def create_month(dataframe, target_column_month,target_column):
     return dataframe, month_array_df
 
 
-def specific_month_df(dataframe, target_column_month):
+def choose_month(dataframe, target_column_month):
     req_data_month = dataframe.loc[(dataframe[target_column_month] == 2) | (dataframe[target_column_month] == 3)]
     #     req_data_month=dataframe.loc[(dataframe[target_column_month]==2|3) ]
     req_frame_month = pd.DataFrame(req_data_month, columns=dataframe.columns)
@@ -150,7 +152,7 @@ def drop_month_year(dataframe):
 #     return dataframe
 
 
-def alter_time(dataframe, start_pos, end_pos):
+def ascending_dataframe(dataframe, start_pos, end_pos):
     #     multivariate_data=test_new.iloc[start_pos:end_pos][multivariate_column_label] # comment out this line if you pass column label
     dataframe = dataframe.iloc[start_pos:end_pos][:]
     dataframe = dataframe.loc[::-1]
@@ -161,7 +163,7 @@ def alter_time(dataframe, start_pos, end_pos):
 # # Now target column and dateTime colum will be arranged as a given column index. Here target column is the output of turbine 9's output
 
 
-def rearrange_frame(dataframe, colname, col_pos):
+def rearrange_dataframe(dataframe, colname, col_pos):
     list_col = dataframe.columns.to_list()
     temp_list = list_col
     for idx, i in enumerate(colname):
@@ -179,7 +181,7 @@ def rearrange_frame(dataframe, colname, col_pos):
 # if the blast furnace signal for turbine 9 is zero then no work will be happened.
 # so, remove all the rows where this value will be zero
 
-def check_A_B_blast_furnace_1(dataframe,furnace_signal_column_a,value_A, furnace_signal_column_b,value_B):
+def check_blast_furnace(dataframe,furnace_signal_column_a,value_A, furnace_signal_column_b,value_B):
     req_data=dataframe.loc[(dataframe[furnace_signal_column_a]>=value_A) | (dataframe[furnace_signal_column_b]>=value_B)]
     req_frame=pd.DataFrame(req_data,columns=dataframe.columns)
     
@@ -214,12 +216,12 @@ def check_A_B_blast_furnace_1(dataframe,furnace_signal_column_a,value_A, furnace
 # # Now choose the target colum  and check if any value is zero or not. If zero then drop those rows. here taret column is T9's output, signal name is AEWIHO_T9AV2
 
 
-def no_zero_value_in_target_1(dataframe, target_column, req_drop_value_target):
+def check_target_column(dataframe, target_column, req_drop_value_target):
 #     req_data_1=dataframe.loc[(dataframe[target_column]!=req_drop_value_target)]
-    req_data_1 = dataframe.loc[(dataframe[target_column]>=60)]
-    req_frame_1=pd.DataFrame(req_data_1,columns=dataframe.columns)
+    dataframe = dataframe.loc[(dataframe[target_column]>=60) & (dataframe[target_column]<=90)]
+    dataframe = pd.DataFrame(dataframe,columns=dataframe.columns)
     
-    return req_frame_1
+    return dataframe
     
 
 
@@ -350,10 +352,9 @@ def feature_selection_with_selectKbest(dataframe, max_best_number):
 # find correlated matrix for dataframe which came from sklearn feature selection and the datafarem which has passed
 # to sklearn feature selection function
 
-def pearson_correlation(sklearn_dataframe, main_dataframe):
-    sklearn_correlation = sklearn_dataframe.corr()
-    main_correlation = main_dataframe.corr()
-    return sklearn_correlation, main_correlation
+def pearson_correlation(dataframe):
+    correlation = dataframe.corr()
+    return correlation
 
 
 # # use the correlation matrix to make the new dataframe where the feature will be the column who has a correlation value with the target in a given range.
@@ -442,3 +443,93 @@ def draw_feature_vs_target(dataframe,final_directory,subfolder):
         plt.rcParams['figure.figsize'] = (20, 10)
         plt.savefig(fig_location + '/' +str(col_name)+' vs '+str(y_axis) + '.jpg')
         plt.show()
+
+
+def score_checking_with_cross_validation(model_list, train_input, train_output, evaluation_metrics_file_path,name):
+    f = open(evaluation_metrics_file_path, 'a')
+    f.write('\n'+'Score checking with Cross Validation')
+    f.write('\n')
+    f.close()
+    for index, value in enumerate(model_list):
+        scores_r2 = cross_val_score(value, train_input, train_output, cv=10, scoring='r2')
+        scores = cross_val_score(value, train_input, train_output, cv=10, scoring='neg_mean_squared_error')
+        mse_scores = -scores
+        rmse_scores = np.sqrt(mse_scores)
+        print(name[index], '--' * 5, scores_r2.mean())
+        print(name[index], '--' * 5, rmse_scores.mean())
+        f = open(evaluation_metrics_file_path, 'a')
+        f.write(str(name[index]) + '\t' + 'RMSE: ' + str(rmse_scores.mean()) + '\n')
+        f.write(str(name[index]) + '\t' + 'r_2 square: ' + str(scores_r2.mean()) + '\n')
+        f.write('\n')
+    f.write('Score checking finish with Cross validation'+'\n')
+    f.close()
+
+from statsmodels.tsa.stattools import adfuller
+
+def test_stationarity(timeseries):
+    # Determing rolling statistics
+    rolmean = timeseries.rolling(12).mean()
+    rolstd = timeseries.rolling(12).std()
+
+    # Plot rolling statistics:
+    fig = plt.figure(figsize=(12, 8))
+    orig = plt.plot(timeseries, color='blue', label='Original')
+    mean = plt.plot(rolmean, color='red', label='Rolling Mean')
+    std = plt.plot(rolstd, color='black', label='Rolling Std')
+    plt.legend(loc='best')
+    plt.title('Rolling Mean & Standard Deviation')
+    #     plt.savefig('check_stationarity.jpg')
+    plt.show()
+
+    # Perform Dickey-Fuller test:
+    print('Results of Dickey-Fuller Test:')
+    dftest = adfuller(timeseries, autolag='AIC', regression='c')
+    dfoutput = pd.Series(dftest[0:4], index=['Test Statistic', 'p-value', '#Lags Used', 'Number of Observations Used'])
+    p_value = dfoutput['p-value']
+    for key, value in dftest[4].items():
+        dfoutput['Critical Value (%s-------)' % key] = value
+    print(dfoutput)
+
+    if p_value <= 0.05:
+        print (p_value,": Rejecting Null Hypothesis.")
+        print("Series is Stationary.")
+    else:
+        print(p_value,": Weak evidence to reject the Null Hypothesis.")
+        print("Series is Non-Stationary.")
+
+
+def tsplot_dataset(df, target_column):
+    n_sample = df.shape[0]
+    print(n_sample)
+    n_train = int(0.995 * n_sample) + 1
+    n_forecast = n_sample - n_train
+
+    ts_train = df.iloc[:n_train][target_column]
+    ts_test = df.iloc[n_train:][target_column]
+    print(ts_train.shape)
+    print(ts_test.shape)
+    print("Training Series:", "\n", ts_train.head(), "\n")
+    print("Testing Series:", "\n", ts_test.head())
+
+    return n_sample, ts_train, ts_test
+import statsmodels.tsa.api as smt
+import seaborn as sns
+
+def tsplot(y, lags=None, title='', figsize=(14, 8)):
+    fig = plt.figure(figsize=figsize)
+    layout = (2, 2)
+    ts_ax = plt.subplot2grid(layout, (0, 0))
+    hist_ax = plt.subplot2grid(layout, (0, 1))
+    acf_ax = plt.subplot2grid(layout, (1, 0))
+    pacf_ax = plt.subplot2grid(layout, (1, 1))
+
+    y.plot(ax=ts_ax)
+    ts_ax.set_title(title)
+    y.plot(ax=hist_ax, kind='hist', bins=25)
+    hist_ax.set_title('Histogram')
+    smt.graphics.plot_acf(y, lags=lags, ax=acf_ax)
+    smt.graphics.plot_pacf(y, lags=lags, ax=pacf_ax)
+    [ax.set_xlim(0) for ax in [acf_ax, pacf_ax]]
+    sns.despine()
+    fig.tight_layout()
+    return ts_ax, acf_ax, pacf_ax
