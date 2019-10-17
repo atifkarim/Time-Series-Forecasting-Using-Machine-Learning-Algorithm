@@ -17,7 +17,6 @@ import math
 
 # from keras.models import Sequential
 # from keras.layers import Dense, Activation, Flatten
-from sklearn.metrics import mean_absolute_error
 # from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 
 from keras.models import Sequential
@@ -135,6 +134,7 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.rcParams['figure.figsize'] =(12,5)
     plt.savefig(fig_location + '/' + "scatter_test_pred" + '.jpg')
     plt.show()
+    plt.figure()
 
 
     difference_of_value = predicted_output - test_output
@@ -151,7 +151,8 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.rcParams['figure.figsize'] =(12,5)
     plt.savefig(fig_location + '/' + "difference_test_pred" + '.jpg')
     plt.show()
-
+    plt.figure()
+    
     plt.hist(difference_of_value, bins=20)
     # plt.xlim(-10,10,1)
     # plt.savefig(model+'_'+'histogram_of_difference_value.jpg')
@@ -161,7 +162,8 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.rcParams['figure.figsize'] =(12,5)
     plt.savefig(fig_location + '/' + "error_histogram" + '.jpg')
     plt.show()
-
+    plt.figure()
+    
     plt.plot(predicted_output[0:len(predicted_output[0:])], color='blue')
     plt.plot(test_output[0:], color='red')
     # plt.xlim(0,40,1)
@@ -174,7 +176,7 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.rcParams['figure.figsize'] =(12,5)
     plt.savefig(fig_location + '/' + "test_and_pred" + '.jpg')
     plt.show()
-
+    plt.figure()
 
 
 def evaluation_metrices(test_output,predicted_output,final_directory,model_name,evaluation_metrics_file_path):
