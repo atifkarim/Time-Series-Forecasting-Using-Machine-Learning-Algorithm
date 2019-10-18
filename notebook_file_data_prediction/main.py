@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 #import pandas as pd
 #import collections
+from scipy import stats
 
 
 from sklearn.linear_model import LinearRegression
@@ -88,7 +89,7 @@ print("Today's date:", today)
 
 current_directory = os.getcwd()
 print('current_directory is: ',current_directory)
-address = 'image_folder_local'
+address = 'image_folder_local_outlier'
 final_directory = current_directory+'/'+str(address)
 if not os.path.exists(final_directory):
     os.makedirs(final_directory)
@@ -150,9 +151,15 @@ dataframe_clean_furnace_column = check_blast_furnace(dataframe_rearranged, furna
                                                                                                 # and remove that rows
 
 
-dataframe_clean_target_column = check_target_column(dataframe_clean_furnace_column,
-                                                                  target_column, req_drop_value_target) # It checks the target column and remove the rows whos value is less than
-                                                                                                        # a minimum value. in this task that was chosen as 60.
+
+dataframe_clean_target_column = dataframe_clean_furnace_column
+
+
+# =============================================================================
+# dataframe_clean_target_column = check_target_column(dataframe_clean_furnace_column,
+#                                                                   target_column, req_drop_value_target) # It checks the target column and remove the rows whos value is less than
+#                                                                                                         # a minimum value. in this task that was chosen as 60.
+# =============================================================================
 
 dataframe_free_from_furnace_target_column_anomaly = dataframe_reset_index(dataframe_clean_target_column)
 print(dataframe_free_from_furnace_target_column_anomaly.shape)
@@ -206,12 +213,46 @@ plt.rcParams['figure.figsize'] = (12, 5)
 
 dataframe_datetime = dataframe_datetime(dataframe_drop_string)
 print(dataframe_datetime.shape)
+
+
+def free_target_column_from_outlier(dataframe):
+    dataframe = dataframe[(np.abs(stats.zscore(dataframe)) < 3).all(axis=1)]
+    
+    return dataframe
+
+dataframe_datetime_1 = free_target_column_from_outlier(dataframe_datetime) 
+print(dataframe_datetime.shape)
+print(dataframe_datetime_1.shape)
+
+plt.plot(dataframe_datetime[target_column], color ='red')
+plt.plot(dataframe_datetime_1[target_column], color = 'green')
+plt.show()
+
+dataframe_datetime_1.describe()
+
+count =0
+for i in dataframe_datetime[target_column]:
+    if i < 62.48:
+        count +=1
+print(count)
+
+arr =[]
+for i in dataframe_datetime.columns:
+    arr.append(i)
+    
+plt.plot(dataframe_datetime[furnace_signal_column_a])
+plt.plot(dataframe_datetime[furnace_signal_column_b])
+
+boxplot = dataframe_datetime.boxplot(column = arr)
+
+plt.boxplot(dataframe_datetime_1[target_column])
+
 #sklearn_feature_best_dataframe = feature_selection_with_selectKbest(dataframe_datetime,max_best_number)
 #sklearn_correlation = pearson_correlation(sklearn_feature_best_dataframe)
 
-main_correlation = pearson_correlation(dataframe_datetime)
+main_correlation = pearson_correlation(dataframe_datetime_1)
 
-main_frame = dataframe_datetime
+main_frame = dataframe_datetime_1
 correlated_frame = main_correlation
 print(main_frame.shape)
 print(correlated_frame.shape)
@@ -232,6 +273,9 @@ dataframe_resample_copy = dataframe_resample_copy.reset_index()
 dataframe_interpolate = dataframe_resample.interpolate('linear')
 dataframe_interpolate_copy = dataframe_interpolate.copy()
 dataframe_interpolate_copy = dataframe_interpolate_copy.reset_index()
+
+plt.plot(dataframe_interpolate[target_column])
+print(dataframe_interpolate.shape)
 
 # following two lines anyone can use to plot feature vs target graph.
 
