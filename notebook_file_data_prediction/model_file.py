@@ -132,8 +132,8 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.ylabel('Predicted output')
 #     plt.title('scatter plotting of predicted_output alongside with the average line of test and predicted output')
     plt.rcParams['figure.figsize'] =(12,5)
-    plt.savefig(fig_location + '/' + "scatter_test_pred" + '.jpg')
-    plt.show()
+    plt.savefig(fig_location + '/' + "scatter_test_pred" + '.jpg',bbox_inches='tight')
+#    plt.show()
     plt.figure()
 
 
@@ -149,8 +149,8 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.xlabel('Sample number')
     plt.grid(b=None, which='both', axis='both')
     plt.rcParams['figure.figsize'] =(12,5)
-    plt.savefig(fig_location + '/' + "difference_test_pred" + '.jpg')
-    plt.show()
+    plt.savefig(fig_location + '/' + "difference_test_pred" + '.jpg',bbox_inches='tight')
+#    plt.show()
     plt.figure()
     
     plt.hist(difference_of_value, bins=20)
@@ -160,8 +160,8 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.ylabel('Frequency')
 #     plt.title('histogram of value of difference')
     plt.rcParams['figure.figsize'] =(12,5)
-    plt.savefig(fig_location + '/' + "error_histogram" + '.jpg')
-    plt.show()
+    plt.savefig(fig_location + '/' + "error_histogram" + '.jpg',bbox_inches='tight')
+#    plt.show()
     plt.figure()
     
     plt.plot(predicted_output[0:len(predicted_output[0:])], color='blue')
@@ -174,8 +174,8 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
 #     plt.title('Visualization of test and predicted output in the same timestamp')
     plt.legend(['predicted_output','actual_output'], loc='best')
     plt.rcParams['figure.figsize'] =(12,5)
-    plt.savefig(fig_location + '/' + "test_and_pred" + '.jpg')
-    plt.show()
+    plt.savefig(fig_location + '/' + "test_and_pred" + '.jpg',bbox_inches='tight')
+#    plt.show()
     plt.figure()
 
 
@@ -260,3 +260,4 @@ def plot_history(train_model_NN, history_graph_NN):
     plt.legend(['loss','val_loss'], loc='best')
     plt.savefig(history_graph_NN+'_loss_vs_epoch.png',bbox_inches='tight')
     plt.rcParams['figure.figsize'] =(12,5)
+    plt.figure()
