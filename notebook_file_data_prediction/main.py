@@ -20,6 +20,7 @@ from dataset_analysis import read_dataframe, create_dateTime, create_month
 from dataset_analysis import choose_month, drop_month_year, ascending_dataframe, rearrange_dataframe
 from dataset_analysis import check_blast_furnace, check_target_column, dataframe_reset_index
 from dataset_analysis import drop_nan_value, drop_unique_valued_columns, drop_string_column, dataframe_datetime
+from dataset_analysis import free_dataframe_from_outlier, free_target_column_from_outlier
 
 #from dataset_analysis import feature_selection_with_selectKbest
 from dataset_analysis import pearson_correlation
@@ -161,24 +162,42 @@ dataframe_clean_target_column = dataframe_clean_furnace_column
 #                                                                                                         # a minimum value. in this task that was chosen as 60.
 # =============================================================================
 
-dataframe_free_from_furnace_target_column_anomaly = dataframe_reset_index(dataframe_clean_target_column)
-print(dataframe_free_from_furnace_target_column_anomaly.shape)
+# =============================================================================
+# dataframe_free_from_furnace_target_column_anomaly = dataframe_reset_index(dataframe_clean_target_column)
+# print(dataframe_free_from_furnace_target_column_anomaly.shape)
+# 
+# plt.plot(dataframe_free_from_furnace_target_column_anomaly [target_column], color = 'blue')
+# plt.plot(dataframe_free_from_furnace_target_column_anomaly [furnace_signal_column_a], color = 'red')
+# plt.plot(dataframe_free_from_furnace_target_column_anomaly [furnace_signal_column_b], color = 'green')
+# plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='center left')
+# # plt.xlim(0,initial_dataframe.shape[0]+10)
+# plt.xticks(np.arange(0,dataframe_free_from_furnace_target_column_anomaly .shape[0],5000),rotation='vertical')
+# plt.xlabel('Numebr of observation')
+# plt.ylabel('Value')
+# #plt.savefig('blast_vs_target_post.png',bbox_inches='tight')
+# plt.rcParams['figure.figsize'] = (12, 5)
+# =============================================================================
 
-plt.plot(dataframe_free_from_furnace_target_column_anomaly [target_column], color = 'blue')
-plt.plot(dataframe_free_from_furnace_target_column_anomaly [furnace_signal_column_a], color = 'red')
-plt.plot(dataframe_free_from_furnace_target_column_anomaly [furnace_signal_column_b], color = 'green')
-plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='center left')
-# plt.xlim(0,initial_dataframe.shape[0]+10)
-plt.xticks(np.arange(0,dataframe_free_from_furnace_target_column_anomaly .shape[0],5000),rotation='vertical')
+plt.plot(dataframe_clean_furnace_column[furnace_signal_column_a], color = 'red')
+plt.plot(dataframe_clean_furnace_column[furnace_signal_column_b],'green')
+plt.legend([furnace_signal_column_a, furnace_signal_column_b], loc='center left')
+#plt.xlim(0,dataframe_clean_furnace_column.shape[0]+1000)
+plt.xticks(np.arange(0,dataframe_clean_furnace_column.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('blast_vs_target_post.png',bbox_inches='tight')
+#plt.savefig('furnace_column.png',bbox_inches='tight')
 plt.rcParams['figure.figsize'] = (12, 5)
+plt.show()
+
+print(dataframe_clean_furnace_column.shape)
 
 
-dataframe_drop_nan = drop_nan_value(dataframe_free_from_furnace_target_column_anomaly)
+
+#dataframe_drop_nan = drop_nan_value(dataframe_free_from_furnace_target_column_anomaly)
+dataframe_drop_nan = drop_nan_value(dataframe_clean_furnace_column)
 dataframe_drop_unique_valued_column = drop_unique_valued_columns(dataframe_drop_nan)
 dataframe_drop_string = drop_string_column(dataframe_drop_unique_valued_column)
+print(dataframe_drop_string.shape)
 dataframe_drop_string.dtypes
 
 # =============================================================================
@@ -194,15 +213,12 @@ dataframe_drop_string.dtypes
 # dataframe_drop_unique_valued_column = None
 # =============================================================================
 
-
-print(dataframe_drop_string.shape)
-
 plt.plot(dataframe_drop_string[target_column], color = 'blue')
 # plt.plot(dataframe_no_string[furnace_signal_column_a], color = 'red')
 # plt.plot(dataframe_no_string[furnace_signal_column_b], color = 'green')
 # plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='upper left')
 plt.legend([target_column], loc='best')
-plt.xticks(np.arange(0,dataframe_drop_string.shape[0],1000),rotation='vertical')
+plt.xticks(np.arange(0,dataframe_drop_string.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
 #plt.savefig('final_target_column.png',bbox_inches='tight')
@@ -214,22 +230,25 @@ plt.rcParams['figure.figsize'] = (12, 5)
 dataframe_datetime = dataframe_datetime(dataframe_drop_string)
 print(dataframe_datetime.shape)
 
+# function to remove outlier from a single column
+dataframe_target_column_free_from_outlier = free_target_column_from_outlier(dataframe_datetime, target_column)
 
-def free_target_column_from_outlier(dataframe):
-    dataframe = dataframe[(np.abs(stats.zscore(dataframe)) < 3).all(axis=1)]
-    
-    return dataframe
 
-dataframe_datetime_1 = free_target_column_from_outlier(dataframe_datetime) 
-print(dataframe_datetime.shape)
-print(dataframe_datetime_1.shape)
+print(dataframe_target_column_free_from_outlier.shape)
+plt.plot(dataframe_target_column_free_from_outlier[target_column])
+dataframe_target_column_free_from_outlier.describe()
+print(dataframe_target_column_free_from_outlier.max())
+
+# function to remove outlier from a whole dataframe
+dataframe_free_from_outlier = free_dataframe_from_outlier(dataframe_datetime) 
+print(dataframe_free_from_outlier.shape)
 
 plt.plot(dataframe_datetime[target_column], color ='red')
-plt.plot(dataframe_datetime_1[target_column], color = 'green')
+plt.plot(dataframe_free_from_outlier[target_column], color = 'green')
 plt.show()
 
-dataframe_datetime_1.describe()
-
+dataframe_free_from_outlier.describe()
+dataframe_target_column_free_from_outlier.describe()
 count =0
 for i in dataframe_datetime[target_column]:
     if i < 62.48:
@@ -245,14 +264,14 @@ plt.plot(dataframe_datetime[furnace_signal_column_b])
 
 boxplot = dataframe_datetime.boxplot(column = arr)
 
-plt.boxplot(dataframe_datetime_1[target_column])
+plt.boxplot(dataframe_free_from_outlier[target_column])
 
 #sklearn_feature_best_dataframe = feature_selection_with_selectKbest(dataframe_datetime,max_best_number)
 #sklearn_correlation = pearson_correlation(sklearn_feature_best_dataframe)
 
-main_correlation = pearson_correlation(dataframe_datetime_1)
+main_correlation = pearson_correlation(dataframe_target_column_free_from_outlier)
 
-main_frame = dataframe_datetime_1
+main_frame = dataframe_target_column_free_from_outlier
 correlated_frame = main_correlation
 print(main_frame.shape)
 print(correlated_frame.shape)
@@ -439,9 +458,8 @@ train_model_NN = NN_model_1.fit(train_input, train_output, batch_size=batch_size
 print(train_model_NN.history.keys())
 history_graph_NN = "NN"
 plot_history(train_model_NN,history_graph_NN)
-
-NN_model_1.save("Neural_Network.h5") # save the trained model to use later
-load_trained_NN = load_model("Neural_Network.h5") # load the saved model
+NN_model_1.save(final_directory+'/'+"Neural_Network.h5") # save the trained model to use later
+load_trained_NN = load_model(final_directory+'/'+"Neural_Network.h5") # load the saved model
 # predicted_output_NN = load_trained_NN.predict(test_input) # uncomment this line if saved model needs to load for prediction
 predicted_output_NN = NN_model_1.predict(test_input)
 test_output_NN = np.reshape(test_output,(-1,1)) # reshaping to 2D array is necessary to plot as the predicted output of NN is 2 dimensional
@@ -476,7 +494,7 @@ train_model_vanilla = vanilla_model.fit(X_train_vanilla, y_train_vanilla, batch_
 print(train_model_vanilla.history.keys())
 plot_history(train_model_vanilla,history_graph_NN="vanilla_lstm")
 
-vanilla_model.save("VANILLA_LSTM.h5")
+vanilla_model.save(final_directory+'/'+"VANILLA_LSTM.h5")
 load_trained_VANILLA_LSTM=load_model("VANILLA_LSTM.h5")
 test_ip_vanilla,test_op_vanilla=split_sequence(multiple_ip_test_set,number_of_step_lstm)
 n_features_test = test_ip_vanilla.shape[-1]
@@ -500,17 +518,17 @@ plot_graph(test_op_vanilla_reshape, yhat_vanilla_loaded, final_directory,'vanill
 # =============================================================================
 # ARIMA
 # =============================================================================
-import re
-import seaborn as sns
-from scipy import stats
+#import re
+#import seaborn as sns
+#from scipy import stats
 import matplotlib.pyplot as plt
-import statsmodels.tsa.api as smt
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from dateutil.relativedelta import relativedelta
-from statsmodels.tsa.stattools import acf, pacf
-from statsmodels.tsa.seasonal import seasonal_decompose
-from statsmodels.tsa.stattools import adfuller
+#import statsmodels.tsa.api as smt
+#import plotly.graph_objects as go
+#from plotly.subplots import make_subplots
+#from dateutil.relativedelta import relativedelta
+#from statsmodels.tsa.stattools import acf, pacf
+#from statsmodels.tsa.seasonal import seasonal_decompose
+#from statsmodels.tsa.stattools import adfuller
 # from sklearn.model_selection import cross_val_predict
 import warnings
 warnings.filterwarnings("ignore")
@@ -543,7 +561,7 @@ plt.xlabel('lags')
 plt.ylabel('correlation')
 # plt.savefig('acf plot code.png',bbox_inches='tight')
 pyplot.show()
-# plt.figure()
+plt.figure()
 plot_pacf(df.iloc[:,-1], lags=62)
 plt.xlabel('lags')
 plt.ylabel('correlation')
