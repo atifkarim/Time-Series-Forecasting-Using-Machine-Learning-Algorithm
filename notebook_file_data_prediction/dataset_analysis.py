@@ -9,6 +9,7 @@ import collections
 import os
 import shutil
 from sklearn.model_selection import cross_val_score
+from scipy import stats
 # get_ipython().run_line_magic('matplotlib', 'inline')
 #from matplotlib.pylab import rcParams
 
@@ -184,8 +185,10 @@ def rearrange_dataframe(dataframe, colname, col_pos):
 def check_blast_furnace(dataframe,furnace_signal_column_a,value_A, furnace_signal_column_b,value_B):
     req_data=dataframe.loc[(dataframe[furnace_signal_column_a]>=value_A) | (dataframe[furnace_signal_column_b]>=value_B)]
     req_frame=pd.DataFrame(req_data,columns=dataframe.columns)
+    dataframe = req_frame.reset_index()
+    dataframe = dataframe.drop(['index'], axis=1)
     
-    return req_frame
+    return dataframe
 
 
 # def check_A_B_blast_furnace(dataframe,furnace_signal_column_a,value_A, furnace_signal_column_b,value_B):
@@ -314,6 +317,19 @@ def dataframe_datetime(dataframe):
     return dataframe_datetime
 
 
+# free target column from outlier
+def free_target_column_from_outlier(dataframe,target_column):
+    dataframe = dataframe[(np.abs(stats.zscore(dataframe[target_column])) < 3)]
+    return dataframe
+
+
+# function to remove outlier from all column
+def free_dataframe_from_outlier(dataframe):
+    dataframe = dataframe[(np.abs(stats.zscore(dataframe)) < 3).all(axis=1)]
+    
+    return dataframe
+
+
 # # All data cleaning process has done. Now feature selection process will come. Before doing this just make a copy of dataframe and set the index as dateTime
 
 
@@ -419,7 +435,7 @@ def draw_graph(dictionary_value, dictionary, target, path, subfolder_name):
         plt.ylabel('value')
 
         plt.rcParams['figure.figsize'] = (20, 10)
-        plt.savefig(fig_location + '/' + str(i) + '.jpg')
+        plt.savefig(fig_location + '/' + str(i) + '.jpg',bbox_inches='tight')
         plt.show()
 
 
@@ -441,7 +457,7 @@ def draw_feature_vs_target(dataframe,final_directory,subfolder):
         plt.ylabel(y_axis)
         plt.title('title is ' + str(col_name)+' vs '+str(y_axis))
         plt.rcParams['figure.figsize'] = (20, 10)
-        plt.savefig(fig_location + '/' +str(col_name)+' vs '+str(y_axis) + '.jpg')
+        plt.savefig(fig_location + '/' +str(col_name)+' vs '+str(y_axis) + '.jpg',bbox_inches='tight')
         plt.show()
 
 
@@ -532,4 +548,5 @@ def tsplot(y, lags=None, title='', figsize=(14, 8)):
     [ax.set_xlim(0) for ax in [acf_ax, pacf_ax]]
     sns.despine()
     fig.tight_layout()
+    plt.savefig('tsplot.png',bbox_inches='tight')
     return ts_ax, acf_ax, pacf_ax
