@@ -20,7 +20,7 @@ from dataset_analysis import read_dataframe, create_dateTime, create_month
 from dataset_analysis import choose_month, drop_month_year, ascending_dataframe, rearrange_dataframe
 from dataset_analysis import check_blast_furnace, check_target_column, dataframe_reset_index
 from dataset_analysis import drop_nan_value, drop_unique_valued_columns, drop_string_column, dataframe_datetime
-from dataset_analysis import free_dataframe_from_outlier, free_target_column_from_outlier
+from dataset_analysis import free_dataframe_from_outlier, free_target_column_from_outlier, gaussian_curve, draw_gaussian_curve
 
 #from dataset_analysis import feature_selection_with_selectKbest
 from dataset_analysis import pearson_correlation
@@ -153,7 +153,7 @@ dataframe_clean_furnace_column = check_blast_furnace(dataframe_rearranged, furna
 
 
 
-dataframe_clean_target_column = dataframe_clean_furnace_column
+#dataframe_clean_target_column = dataframe_clean_furnace_column
 
 
 # =============================================================================
@@ -221,13 +221,15 @@ plt.legend([target_column], loc='best')
 plt.xticks(np.arange(0,dataframe_drop_string.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('final_target_column.png',bbox_inches='tight')
+plt.savefig('final_target_column_before_removing_outlier.png',bbox_inches='tight')
 # plt.xlim(0,initial_dataframe.shape[0]+10)
 # plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
 
 
-dataframe_datetime = dataframe_datetime(dataframe_drop_string)
+dataframe_drop_string.describe()
+
+dataframe_datetime = dataframe_datetime(dataframe_drop_string) # make dateTime as index
 print(dataframe_datetime.shape)
 
 # function to remove outlier from a single column
@@ -235,9 +237,30 @@ dataframe_target_column_free_from_outlier = free_target_column_from_outlier(data
 
 
 print(dataframe_target_column_free_from_outlier.shape)
-plt.plot(dataframe_target_column_free_from_outlier[target_column])
+#plt.plot(dataframe_target_column_free_from_outlier[target_column])
 dataframe_target_column_free_from_outlier.describe()
 print(dataframe_target_column_free_from_outlier.max())
+
+
+# =============================================================================
+# plot dataframe where target column free from outlier by resetting index as it is easy to interpret
+# =============================================================================
+dataframe_target_column_free_from_outlier_copy = dataframe_target_column_free_from_outlier.copy()
+dataframe_reset_target_column_free_from_outlier = dataframe_target_column_free_from_outlier_copy.reset_index()
+print(dataframe_reset_target_column_free_from_outlier.shape)
+plt.plot(dataframe_reset_target_column_free_from_outlier[target_column], color = 'blue')
+plt.legend([target_column], loc='best')
+plt.xticks(np.arange(0,dataframe_reset_target_column_free_from_outlier.shape[0],5000),rotation='vertical')
+plt.xlabel('Numebr of observation')
+plt.ylabel('Value')
+plt.savefig('final_target_column_after_removing_outlier.png',bbox_inches='tight')
+# plt.xlim(0,initial_dataframe.shape[0]+10)
+# plt.xticks(np.arange(0,initial_dataframe.shape[0],))
+plt.rcParams['figure.figsize'] = (12, 5)
+
+
+
+
 
 # function to remove outlier from a whole dataframe
 dataframe_free_from_outlier = free_dataframe_from_outlier(dataframe_datetime) 
@@ -262,9 +285,23 @@ for i in dataframe_datetime.columns:
 plt.plot(dataframe_datetime[furnace_signal_column_a])
 plt.plot(dataframe_datetime[furnace_signal_column_b])
 
-boxplot = dataframe_datetime.boxplot(column = arr)
+boxplot_dateTime = dataframe_datetime.boxplot(column = arr)
+boxplot_target_column_free_from_outlier = dataframe_target_column_free_from_outlier.boxplot(column=arr)
+boxplot_dataframe_free_from_outlier = dataframe_free_from_outlier.boxplot(column=arr)
 
 plt.boxplot(dataframe_free_from_outlier[target_column])
+
+# =============================================================================
+# plotting the gausian curve
+# =============================================================================
+#total_mean_target_column_with_outlier, total_variance_target_column_with_outlier = dataframe_datetime[target_column].mean(),dataframe_datetime[target_column].std()
+draw_gaussian_curve(dataframe_target_column_free_from_outlier, target_column, graph_name = 'without_outlier') # draw gaussian curve, please change graph name 
+
+    
+gaussian_curve(dataframe_target_column_free_from_outlier,target_column,name = '1_free_from_outlier_1_')
+
+
+
 
 #sklearn_feature_best_dataframe = feature_selection_with_selectKbest(dataframe_datetime,max_best_number)
 #sklearn_correlation = pearson_correlation(sklearn_feature_best_dataframe)
@@ -293,7 +330,16 @@ dataframe_interpolate = dataframe_resample.interpolate('linear')
 dataframe_interpolate_copy = dataframe_interpolate.copy()
 dataframe_interpolate_copy = dataframe_interpolate_copy.reset_index()
 
-plt.plot(dataframe_interpolate[target_column])
+plt.plot(dataframe_resample_copy[target_column])
+plt.legend([target_column], loc='best')
+plt.xticks(np.arange(0,dataframe_resample_copy.shape[0],5000),rotation='vertical')
+plt.xlabel('Numebr of observation')
+plt.ylabel('Value')
+plt.savefig('resample.png',bbox_inches='tight')
+# plt.xlim(0,initial_dataframe.shape[0]+10)
+# plt.xticks(np.arange(0,initial_dataframe.shape[0],))
+plt.rcParams['figure.figsize'] = (12, 5)
+
 print(dataframe_interpolate.shape)
 
 # following two lines anyone can use to plot feature vs target graph.
