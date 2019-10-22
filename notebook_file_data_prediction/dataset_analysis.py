@@ -10,6 +10,7 @@ import os
 import shutil
 from sklearn.model_selection import cross_val_score
 from scipy import stats
+from scipy.stats import norm
 # get_ipython().run_line_magic('matplotlib', 'inline')
 #from matplotlib.pylab import rcParams
 
@@ -314,6 +315,7 @@ def drop_string_column(dataframe):
 
 def dataframe_datetime(dataframe):
     dataframe_datetime = dataframe.set_index('dateTime')
+    dataframe_datetime.describe()
     return dataframe_datetime
 
 
@@ -411,6 +413,47 @@ def dataframe_date_time_type(dataframe):
     df = pd.concat([df, target_df], axis=1)
 
     return df
+
+
+def draw_gaussian_curve(dataframe,target_column,graph_name):
+    mean_with_outlier = dataframe.describe()[target_column]['mean']
+    std_with_outlier = dataframe.describe()[target_column]['std']
+    var_with_outlier = (std_with_outlier)**2
+    print(var_with_outlier, std_with_outlier)
+    min_value_with_outlier = dataframe.describe()[target_column]['min']
+    max_value_with_outlier = dataframe.describe()[target_column]['max']
+    
+    # calculate the z-transform
+    z1 = ( min_value_with_outlier - mean_with_outlier ) / std_with_outlier
+    z2 = ( max_value_with_outlier - mean_with_outlier ) / std_with_outlier
+
+    x = np.arange(z1, z2, 0.001) # range of x in spec
+    x_all = np.arange(-10, 10, 0.001) # entire range of x, both in and out of spec
+    # mean = 0, stddev = 1, since Z-transform was calculated
+    y = norm.pdf(x,0,1)
+    y2 = norm.pdf(x_all,0,1)
+    
+    fig, ax = plt.subplots(figsize=(9,6))
+    plt.style.use('fivethirtyeight')
+    ax.plot(x_all,y2)
+    
+    ax.fill_between(x,y,0, alpha=0.3, color='b')
+    ax.fill_between(x_all,y2,0, alpha=0.1)
+    ax.set_xlim([-4,4])
+    ax.set_xlabel('# of Standard Deviations Outside the Mean')
+    ax.set_yticklabels([])
+    ax.set_title('Normal Gaussian Curve')
+    plt.savefig(graph_name+'_normal_curve.png', dpi=72, bbox_inches='tight')
+    plt.show()
+    
+def gaussian_curve(dataframe, target_column,name):
+    mean = dataframe.describe()[target_column]['mean']
+    std = dataframe.describe()[target_column]['std']
+    x = np.linspace(mean - 3*std, mean + 3*std, 100)
+    plt.plot(x, stats.norm.pdf(x, mean, std))
+    plt.savefig(name+'gaussian_normal_curve.png',bbox_inches='tight')
+    plt.rcParams['figure.figsize'] = (12, 5)
+    plt.show()
 
 
 def my_sum(x,y):
