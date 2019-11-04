@@ -18,9 +18,9 @@ from scipy.stats import norm
 # function to read the csv file
 
 def read_dataframe(filepath):
-    test = pd.read_csv(filepath)  # here the given csv file is reading
+    dataframe = pd.read_csv(filepath)  # here the given csv file is reading
 
-    return test
+    return dataframe
 
 
 # create datetime and drop rowID column if exists
