@@ -113,8 +113,9 @@ else:
     f.close()
     print('metrics file removed and created')
     
-
-dataframe_read = read_dataframe(filepath_ubuntu_feb_march)
+import pandas as pd
+# dataframe_read = read_dataframe(filepath_ubuntu_feb_march)
+dataframe_read = pd.read_csv(filepath_server_feb_march, nrows = 40000)
 cols_list = ['longTime',furnace_signal_column_a,furnace_signal_column_b,target_column,'RWWIHOBG9_V0','AEWIGHG9__P0','AEWIGHG9__T0']
 dataframe_sliced = dataframe_read.iloc[:][cols_list]  #this is done here due to overcome the huge time of processing on a big data. cols_list array includes the column which are
                                                         #highly correlated with the target variable. This highly correlatd info got from the training or first stage of coding.
