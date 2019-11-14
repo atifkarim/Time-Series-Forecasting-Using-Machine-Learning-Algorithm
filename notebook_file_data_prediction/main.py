@@ -234,9 +234,9 @@ dataframe_drop_string.describe()
 dataframe_drop_string.dtypes
 
 
-dataframe_datetime_1 = dataframe_datetime(dataframe_drop_string) # make dateTime as index
-print(dataframe_datetime_1.shape)
-dataframe_datetime = dataframe_datetime_1.drop([furnace_signal_column_a, furnace_signal_column_b, 'month'], axis=1)
+dataframe_datetime = dataframe_datetime(dataframe_drop_string) # make dateTime as index
+#print(dataframe_datetime_1.shape)
+#dataframe_datetime = dataframe_datetime_1.drop([furnace_signal_column_a, furnace_signal_column_b, 'month'], axis=1)
 
 arr =[]
 for i in dataframe_datetime.columns:
@@ -298,12 +298,14 @@ for i in dataframe_datetime.columns:
 boxplot_dateTime = dataframe_datetime.boxplot(column = arr)
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-plt.savefig('whole_frame_boxplot.png',bbox_inches='tight')
+#plt.savefig('whole_frame_boxplot.png',bbox_inches='tight')
 
-sd = pd.melt(dataframe_datetime, value_vars=[arr[0], arr[1]])
-sd
-import seaborn as sns
-sns.swarmplot(x='variable', y='value', data=sd)
+# =============================================================================
+# sd = pd.melt(dataframe_datetime, value_vars=[arr[0], arr[1]])
+# sd
+# import seaborn as sns
+# sns.swarmplot(x='variable', y='value', data=sd)
+# =============================================================================
 
 
 
@@ -316,10 +318,12 @@ plt.boxplot(dataframe_free_from_outlier[target_column])
 # plotting the gausian curve
 # =============================================================================
 #total_mean_target_column_with_outlier, total_variance_target_column_with_outlier = dataframe_datetime[target_column].mean(),dataframe_datetime[target_column].std()
-draw_gaussian_curve(dataframe_target_column_free_from_outlier, target_column, graph_name = 'without_outlier') # draw gaussian curve, please change graph name 
-
+#draw_gaussian_curve(dataframe_target_column_free_from_outlier, target_column, graph_name = 'without_outlier') # draw gaussian curve, please change graph name 
+#draw_gaussian_curve(dataframe_datetime, target_column, graph_name = 'with_outlier') #  with outliuer
     
-gaussian_curve(dataframe_target_column_free_from_outlier,target_column,name = '1_free_from_outlier_1_')
+gaussian_curve(dataframe_target_column_free_from_outlier,target_column,name = '1_free_from_outlier_1_') # gaussian curve without outlier
+
+gaussian_curve(dataframe_datetime,target_column,name = '1_with_from_outlier_1_') # gaussian curve with outlier
 
 
 
@@ -341,7 +345,23 @@ dataframe_high_correlation = make_dataframe_with_high_correlated_value(main_fram
                                                              correlation_threshold_min_value, correlation_threshold_max_value)
 
 print(dataframe_high_correlation.shape)
+df_res = dataframe_high_correlation.reset_index()
+df_res_1 = df_res.drop(df_res.columns[0], axis=1)
 dataframe_high_correlation.describe()
+
+
+# =============================================================================
+# graph target colum vs all feature before resampling
+# =============================================================================
+for i in range (dataframe_high_correlation.shape[1]):
+    if i == 3:
+        break
+    else:
+        plt.scatter(dataframe_high_correlation[dataframe_high_correlation.columns[i]], dataframe_high_correlation[target_column])
+        plt.show()
+        plt.figure()
+
+
 
 dataframe_resample = dataframe_high_correlation.resample('1min').mean()
 dataframe_resample_copy = dataframe_resample.copy()
@@ -356,12 +376,24 @@ plt.legend([target_column], loc='best')
 plt.xticks(np.arange(0,dataframe_resample_copy.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-plt.savefig('resample.png',bbox_inches='tight')
+#plt.savefig('resample.png',bbox_inches='tight')
 # plt.xlim(0,initial_dataframe.shape[0]+10)
 # plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
 
+print(dataframe_resample.shape)
 print(dataframe_interpolate.shape)
+
+
+for i in range (dataframe_interpolate.shape[1]):
+    if i == 3:
+        break
+    else:
+        plt.scatter(dataframe_interpolate[dataframe_interpolate.columns[i]], dataframe_interpolate[target_column])
+        plt.show()
+        plt.figure()
+
+
 
 # following two lines anyone can use to plot feature vs target graph.
 
