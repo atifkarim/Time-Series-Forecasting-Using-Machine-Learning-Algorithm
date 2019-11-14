@@ -114,8 +114,8 @@ else:
     print('metrics file removed and created')
     
 import pandas as pd
-# dataframe_read = read_dataframe(filepath_ubuntu_feb_march)
-dataframe_read = pd.read_csv(filepath_server_feb_march, nrows = 40000)
+dataframe_read = read_dataframe(filepath_ubuntu_feb_march)
+#dataframe_read = pd.read_csv(filepath_server_feb_march, nrows = 40000)
 cols_list = ['longTime',furnace_signal_column_a,furnace_signal_column_b,target_column,'RWWIHOBG9_V0','AEWIGHG9__P0','AEWIGHG9__T0']
 dataframe_sliced = dataframe_read.iloc[:][cols_list]  #this is done here due to overcome the huge time of processing on a big data. cols_list array includes the column which are
                                                         #highly correlated with the target variable. This highly correlatd info got from the training or first stage of coding.
@@ -129,17 +129,17 @@ dataframe_with_specific_month = choose_month(dataframe_include_month,'month') # 
                                                                                     # please take a look in the body of the function.
 dataframe_with_specific_month_reset = drop_month_year(dataframe_with_specific_month) # here, drop of the month column is possible though it it omitted here. No need.
 
-# print(dataframe_read.shape)
-# plt.plot(dataframe_read[target_column], color = 'blue')
-# plt.plot(dataframe_read[furnace_signal_column_a], color = 'red')
-# plt.plot(dataframe_read[furnace_signal_column_b], color = 'green')
-# plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='best')
-# # plt.xlim(0,initial_dataframe.shape[0]+10)
-# plt.xticks(np.arange(0,dataframe_read.shape[0],5000),rotation='vertical')
-# plt.xlabel('Numebr of observation')
-# plt.ylabel('Value')
-# #plt.savefig('blast_vs_target_pre.png',bbox_inches='tight')
-# plt.rcParams['figure.figsize'] = (12,5)
+print(dataframe_read.shape)
+#plt.plot(dataframe_read[target_column], color = 'blue')
+plt.plot(dataframe_read[furnace_signal_column_a], color = 'red')
+plt.plot(dataframe_read[furnace_signal_column_b], color = 'green')
+plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='best')
+#plt.xlim(0,initial_dataframe.shape[0]+10)
+plt.xticks(np.arange(0,dataframe_read.shape[0],5000),rotation='vertical')
+plt.xlabel('Numebr of observation')
+plt.ylabel('Value')
+#plt.savefig('only_blast_furnace.png',bbox_inches='tight')
+plt.rcParams['figure.figsize'] = (12,5)
 
 
 
@@ -149,10 +149,11 @@ index_array=[0,-1]
 req_column_name = [date_column, target_column]
 # req_column_name = [date_column, furnace_signal_column]
 dataframe_rearranged = rearrange_dataframe(dataframe_ascending,req_column_name,index_array)
+
 dataframe_clean_furnace_column = check_blast_furnace(dataframe_rearranged, furnace_signal_column_a, value_A,
                                                                furnace_signal_column_b, value_B) # this line check is there any anomaly in the blast furnace A and B's column
                                                                                                 # and remove that rows
-
+print(dataframe_clean_furnace_column.shape)
 
 
 #dataframe_clean_target_column = dataframe_clean_furnace_column
@@ -187,7 +188,7 @@ plt.legend([furnace_signal_column_a, furnace_signal_column_b], loc='center left'
 plt.xticks(np.arange(0,dataframe_clean_furnace_column.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('furnace_column.png',bbox_inches='tight')
+#plt.savefig('furnace_column_cleaned.png',bbox_inches='tight')
 plt.rcParams['figure.figsize'] = (12, 5)
 plt.show()
 
@@ -216,23 +217,30 @@ dataframe_drop_string.dtypes
 # =============================================================================
 
 plt.plot(dataframe_drop_string[target_column], color = 'blue')
-# plt.plot(dataframe_no_string[furnace_signal_column_a], color = 'red')
-# plt.plot(dataframe_no_string[furnace_signal_column_b], color = 'green')
-# plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='upper left')
+plt.plot(dataframe_drop_string[furnace_signal_column_a], color = 'red')
+plt.plot(dataframe_drop_string[furnace_signal_column_b], color = 'green')
+plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='upper left')
 plt.legend([target_column], loc='best')
-plt.xticks(np.arange(0,dataframe_drop_string.shape[0],5000),rotation='vertical')
+plt.xticks(np.arange(0,dataframe_drop_string.shape[0],4000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-plt.savefig('final_target_column_before_removing_outlier.png',bbox_inches='tight')
+#plt.savefig('final_target_column_before_removing_outlier.png',bbox_inches='tight')
 # plt.xlim(0,initial_dataframe.shape[0]+10)
 # plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
 
 
 dataframe_drop_string.describe()
+dataframe_drop_string.dtypes
 
-dataframe_datetime = dataframe_datetime(dataframe_drop_string) # make dateTime as index
-print(dataframe_datetime.shape)
+
+dataframe_datetime_1 = dataframe_datetime(dataframe_drop_string) # make dateTime as index
+print(dataframe_datetime_1.shape)
+dataframe_datetime = dataframe_datetime_1.drop([furnace_signal_column_a, furnace_signal_column_b, 'month'], axis=1)
+
+arr =[]
+for i in dataframe_datetime.columns:
+    arr.append(i)
 
 # function to remove outlier from a single column
 dataframe_target_column_free_from_outlier = free_target_column_from_outlier(dataframe_datetime, target_column)
@@ -255,9 +263,9 @@ plt.legend([target_column], loc='best')
 plt.xticks(np.arange(0,dataframe_reset_target_column_free_from_outlier.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-plt.savefig('final_target_column_after_removing_outlier.png',bbox_inches='tight')
-# plt.xlim(0,initial_dataframe.shape[0]+10)
-# plt.xticks(np.arange(0,initial_dataframe.shape[0],))
+#plt.savefig('final_target_column_after_removing_outlier.png',bbox_inches='tight')
+#plt.xlim(0,initial_dataframe.shape[0]+10)
+#plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
 
 
@@ -284,10 +292,21 @@ arr =[]
 for i in dataframe_datetime.columns:
     arr.append(i)
     
-plt.plot(dataframe_datetime[furnace_signal_column_a])
-plt.plot(dataframe_datetime[furnace_signal_column_b])
+#plt.plot(dataframe_datetime[furnace_signal_column_a])
+#plt.plot(dataframe_datetime[furnace_signal_column_b])
 
 boxplot_dateTime = dataframe_datetime.boxplot(column = arr)
+plt.xlabel('Numebr of observation')
+plt.ylabel('Value')
+plt.savefig('whole_frame_boxplot.png',bbox_inches='tight')
+
+sd = pd.melt(dataframe_datetime, value_vars=[arr[0], arr[1]])
+sd
+import seaborn as sns
+sns.swarmplot(x='variable', y='value', data=sd)
+
+
+
 boxplot_target_column_free_from_outlier = dataframe_target_column_free_from_outlier.boxplot(column=arr)
 boxplot_dataframe_free_from_outlier = dataframe_free_from_outlier.boxplot(column=arr)
 
