@@ -115,7 +115,7 @@ def create_month(dataframe, target_column_month,target_column):
 
     month_array_df = distinct_month_1(dataframe, target_column_month, month_key_value)
 
-    #draw_month_fig = draw_month(month_key_value, dict_of_month, target_column)
+#     draw_month_fig = draw_month(month_key_value, dict_of_month, target_column)
 
     return dataframe, month_array_df
 
