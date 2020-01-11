@@ -1,4 +1,9 @@
 # Forecasting of different sensors' data of a power plant
+
+This respository contains code to foecast data of numerous sensors. Data cleaning and prediction task is done step by step to perform the whole work. [In develop](https://github.com/atifkarim/Time-Series-Forecasting-of-a-Power-Plant/tree/develop) branch all of the code will be found.
+
+
+
 **testing bold**\
 *testing italic*
 \
