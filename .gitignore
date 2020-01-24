@@ -24,3 +24,6 @@ data_prediction_of_PowerPlant/image_folder
 notebook_file_data_prediction/HelloFresh_scouting.ipynb
 notebook_file_data_prediction/code for report.ipynb
 notebook_file_data_prediction/creating_test_set.ipynb
+
+*.jpg
+*.png

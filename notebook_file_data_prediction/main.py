@@ -130,15 +130,30 @@ dataframe_with_specific_month = choose_month(dataframe_include_month,'month') # 
 dataframe_with_specific_month_reset = drop_month_year(dataframe_with_specific_month) # here, drop of the month column is possible though it it omitted here. No need.
 
 print(dataframe_read.shape)
-#plt.plot(dataframe_read[target_column], color = 'blue')
+plt.plot(dataframe_read[target_column], color = 'blue')
 plt.plot(dataframe_read[furnace_signal_column_a], color = 'red')
 plt.plot(dataframe_read[furnace_signal_column_b], color = 'green')
-plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='best')
+plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b],('my target','furnace A','furnace B'))
 #plt.xlim(0,initial_dataframe.shape[0]+10)
 plt.xticks(np.arange(0,dataframe_read.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('only_blast_furnace.png',bbox_inches='tight')
+plt.savefig('only_blast_furnace.png',bbox_inches='tight')
+plt.rcParams['figure.figsize'] = (12,5)
+
+# =============================================================================
+# Below code is used for draw graph with using own label name for each variable. It is same as the above graph.
+# =============================================================================
+
+#plt.plot(dataframe_read[target_column], color = 'blue', label='Target(Amount of wind in Turbine 9)')
+plt.plot(dataframe_read[furnace_signal_column_a], color = 'red', label = 'Blast Furnace A')
+plt.plot(dataframe_read[furnace_signal_column_b], color = 'green', label = 'Blast Furnace B')
+plt.legend(loc='best')
+#plt.xlim(0,initial_dataframe.shape[0]+10)
+plt.xticks(np.arange(0,dataframe_read.shape[0],5000),rotation='vertical')
+plt.xlabel('Numebr of observation')
+plt.ylabel('Value')
+plt.savefig('only_blast_furnace.png',bbox_inches='tight')
 plt.rcParams['figure.figsize'] = (12,5)
 
 
@@ -225,7 +240,7 @@ plt.legend([target_column], loc='best')
 plt.xticks(np.arange(0,dataframe_drop_string.shape[0],4000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('final_target_column_before_removing_outlier.png',bbox_inches='tight')
+plt.savefig('final_target_column_before_removing_outlier.png',bbox_inches='tight')
 # plt.xlim(0,initial_dataframe.shape[0]+10)
 # plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
@@ -264,7 +279,7 @@ plt.legend([target_column], loc='best')
 plt.xticks(np.arange(0,dataframe_reset_target_column_free_from_outlier.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('final_target_column_after_removing_outlier.png',bbox_inches='tight')
+plt.savefig('final_target_column_after_removing_outlier.png',bbox_inches='tight')
 #plt.xlim(0,initial_dataframe.shape[0]+10)
 #plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
@@ -372,12 +387,13 @@ dataframe_interpolate = dataframe_resample.interpolate('linear')
 dataframe_interpolate_copy = dataframe_interpolate.copy()
 dataframe_interpolate_copy = dataframe_interpolate_copy.reset_index()
 
-plt.plot(dataframe_resample_copy[target_column])
-plt.legend([target_column], loc='best')
-plt.xticks(np.arange(0,dataframe_resample_copy.shape[0],5000),rotation='vertical')
+plt.plot(dataframe_interpolate_copy[target_column], label='Target(Amount of wind in Turbine 9)')
+#plt.legend([target_column], loc='best')
+plt.legend(loc='best')
+plt.xticks(np.arange(0,dataframe_interpolate_copy.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('resample.png',bbox_inches='tight')
+plt.savefig('interpolation.png',bbox_inches='tight')
 # plt.xlim(0,initial_dataframe.shape[0]+10)
 # plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
@@ -385,24 +401,95 @@ plt.rcParams['figure.figsize'] = (12, 5)
 print(dataframe_resample.shape)
 print(dataframe_interpolate.shape)
 
+# =============================================================================
+# the following code stands for plotting correlation plot
+# =============================================================================
 
+import seaborn as sns
+sns.pairplot(dataframe_interpolate_copy)
+
+
+# =============================================================================
+# The following code stands for plotting feature VS target graph (scatter plot)
+# =============================================================================
 for i in range (dataframe_interpolate.shape[1]):
     if i == 3:
         break
     else:
         plt.scatter(dataframe_interpolate[dataframe_interpolate.columns[i]], dataframe_interpolate[target_column])
+        plt.xlabel(dataframe_interpolate.columns[i])
+        plt.ylabel(target_column)
+#        plt.savefig(dataframe_interpolate.columns[i]+'_vs_'+target_column+'_correlation.jpg')
         plt.show()
         plt.figure()
+        
+
+# =============================================================================
+# The following code stands for plotting feature VS target graph 
+# =============================================================================
+
+for now_num in range(3):
+    col_name = dataframe_high_correlation.columns[now_num]
+    dataframe_high_correlation.iloc[0:100].plot(dataframe_high_correlation.columns[now_num],dataframe_high_correlation.columns[-1])
+    plt.title('title is '+str(col_name))
+
+main_frame.head(2)
+main_correlation.head(2)
+len(dataframe_high_correlation.columns)
+print(type(dataframe_high_correlation))
+
+# =============================================================================
+# The following code stands for observing partial correlation. In this type of plotting NEVER EVER target column will present.
+# To know the number of plot you have to know the number of feature(number of column of the dataframe except target column)
+# To know how many plot could be drawn can be calculated by doing the combination operation between two variable
+# Consider dataframe has total 10 column where 1 column is target. Then number of feature column is 9. Do, 9C2(combination).
+# It is the number of total plot  
+# =============================================================================
+
+p=0
+q=0
+column_number=3
+count = 0
+q = p+1
+for h in range(4):
+#     print('loop num: ',h,'\n')
+    if p !=column_number and q!=column_number:
+        print(dataframe_high_correlation.columns[p],'--'*5,dataframe_high_correlation.columns[q])
+#        plt.plot(dataframe_high_correlation[dataframe_high_correlation.columns[p]],dataframe_high_correlation[dataframe_high_correlation.columns[q]])
+        dataframe_high_correlation.plot(dataframe_high_correlation.columns[p],dataframe_high_correlation.columns[q], kind='scatter')
+        plt.xlabel(dataframe_high_correlation.columns[p])
+        plt.ylabel(dataframe_high_correlation.columns[q])
+        plt.title(dataframe_high_correlation.columns[p]+'_vs_'+dataframe_high_correlation.columns[q])
+        plt.savefig(dataframe_high_correlation.columns[p]+'_vs_'+dataframe_high_correlation.columns[q]+'_partial_correlation_check.jpg')
+        plt.show()
+        plt.figure()
+#         print('\n')
+#         print('------------count: ',count,' p: ',p,'\t q: ',q)
+        q+=1
+        count+=1
+        if q == column_number:
+            print('*'*20)
+            p+=1
+            q=p+1
+#             print('now val of p: ',p,' and q: ',q)
+            if p == column_number-1:
+#                 print('val of p is: ',p)
+                print('finish')
 
 
 
+# =============================================================================
 # following two lines anyone can use to plot feature vs target graph.
+# =============================================================================
 
 # subfolder_1 = 'feature_vs_target'+'_'+str(today)
 # draw_feature_vs_target = draw_feature_vs_target(dataframe_interpolate,final_directory,subfolder_1)
 
 
+# =============================================================================
 # Here, train and test set are going to be made
+# =============================================================================
+
 train_input, train_output, test_input, test_output = make_dataset(dataframe_interpolate,required_number_of_test_data)
 
 model_list = [LinearRegression(fit_intercept=True),linear_model.Lasso(alpha=0.1),linear_model.Ridge(alpha=.5),
