@@ -401,10 +401,17 @@ plt.rcParams['figure.figsize'] = (12, 5)
 print(dataframe_resample.shape)
 print(dataframe_interpolate.shape)
 
+# =============================================================================
+# the following code stands for plotting correlation plot
+# =============================================================================
+
 import seaborn as sns
 sns.pairplot(dataframe_interpolate_copy)
 
 
+# =============================================================================
+# The following code stands for plotting feature VS target graph (scatter plot)
+# =============================================================================
 for i in range (dataframe_interpolate.shape[1]):
     if i == 3:
         break
@@ -412,31 +419,56 @@ for i in range (dataframe_interpolate.shape[1]):
         plt.scatter(dataframe_interpolate[dataframe_interpolate.columns[i]], dataframe_interpolate[target_column])
         plt.xlabel(dataframe_interpolate.columns[i])
         plt.ylabel(target_column)
-        plt.savefig(dataframe_interpolate.columns[i]+'_vs_'+target_column+'_correlation.jpg')
+#        plt.savefig(dataframe_interpolate.columns[i]+'_vs_'+target_column+'_correlation.jpg')
         plt.show()
         plt.figure()
         
 
+# =============================================================================
+# The following code stands for plotting feature VS target graph 
+# =============================================================================
+
+for now_num in range(3):
+    col_name = dataframe_high_correlation.columns[now_num]
+    dataframe_high_correlation.iloc[0:100].plot(dataframe_high_correlation.columns[now_num],dataframe_high_correlation.columns[-1])
+    plt.title('title is '+str(col_name))
+
 main_frame.head(2)
 main_correlation.head(2)
-len(main_frame.columns)
+len(dataframe_high_correlation.columns)
+print(type(dataframe_high_correlation))
+
+# =============================================================================
+# The following code stands for observing partial correlation. In this type of plotting NEVER EVER target column will present.
+# To know the number of plot you have to know the number of feature(number of column of the dataframe except target column)
+# To know how many plot could be drawn can be calculated by doing the combination operation between two variable
+# Consider dataframe has total 10 column where 1 column is target. Then number of feature column is 9. Do, 9C2(combination).
+# It is the number of total plot  
+# =============================================================================
+
 p=0
 q=0
-column_number=6
+column_number=3
 count = 0
 q = p+1
-for h in range(16):
+for h in range(4):
 #     print('loop num: ',h,'\n')
     if p !=column_number and q!=column_number:
-        main_frame.iloc[0:100].plot(main_frame.columns[p],main_frame.columns[q])
-        plt.xlabel(main_frame.columns[p])
-        plt.ylabel(main_frame[q])
-        plt.title(main_frame[p]+'_vs_'+main_frame.columns[q])
+        print(dataframe_high_correlation.columns[p],'--'*5,dataframe_high_correlation.columns[q])
+#        plt.plot(dataframe_high_correlation[dataframe_high_correlation.columns[p]],dataframe_high_correlation[dataframe_high_correlation.columns[q]])
+        dataframe_high_correlation.plot(dataframe_high_correlation.columns[p],dataframe_high_correlation.columns[q], kind='scatter')
+        plt.xlabel(dataframe_high_correlation.columns[p])
+        plt.ylabel(dataframe_high_correlation.columns[q])
+        plt.title(dataframe_high_correlation.columns[p]+'_vs_'+dataframe_high_correlation.columns[q])
+        plt.savefig(dataframe_high_correlation.columns[p]+'_vs_'+dataframe_high_correlation.columns[q]+'_partial_correlation_check.jpg')
+        plt.show()
+        plt.figure()
 #         print('\n')
 #         print('------------count: ',count,' p: ',p,'\t q: ',q)
         q+=1
         count+=1
         if q == column_number:
+            print('*'*20)
             p+=1
             q=p+1
 #             print('now val of p: ',p,' and q: ',q)
@@ -446,13 +478,18 @@ for h in range(16):
 
 
 
+# =============================================================================
 # following two lines anyone can use to plot feature vs target graph.
+# =============================================================================
 
 # subfolder_1 = 'feature_vs_target'+'_'+str(today)
 # draw_feature_vs_target = draw_feature_vs_target(dataframe_interpolate,final_directory,subfolder_1)
 
 
+# =============================================================================
 # Here, train and test set are going to be made
+# =============================================================================
+
 train_input, train_output, test_input, test_output = make_dataset(dataframe_interpolate,required_number_of_test_data)
 
 model_list = [LinearRegression(fit_intercept=True),linear_model.Lasso(alpha=0.1),linear_model.Ridge(alpha=.5),
