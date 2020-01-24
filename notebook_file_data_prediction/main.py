@@ -130,15 +130,30 @@ dataframe_with_specific_month = choose_month(dataframe_include_month,'month') # 
 dataframe_with_specific_month_reset = drop_month_year(dataframe_with_specific_month) # here, drop of the month column is possible though it it omitted here. No need.
 
 print(dataframe_read.shape)
-#plt.plot(dataframe_read[target_column], color = 'blue')
+plt.plot(dataframe_read[target_column], color = 'blue')
 plt.plot(dataframe_read[furnace_signal_column_a], color = 'red')
 plt.plot(dataframe_read[furnace_signal_column_b], color = 'green')
-plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b], loc='best')
+plt.legend([target_column, furnace_signal_column_a, furnace_signal_column_b],('my target','furnace A','furnace B'))
 #plt.xlim(0,initial_dataframe.shape[0]+10)
 plt.xticks(np.arange(0,dataframe_read.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('only_blast_furnace.png',bbox_inches='tight')
+plt.savefig('only_blast_furnace.png',bbox_inches='tight')
+plt.rcParams['figure.figsize'] = (12,5)
+
+# =============================================================================
+# Below code is used for draw graph with using own label name for each variable. It is same as the above graph.
+# =============================================================================
+
+#plt.plot(dataframe_read[target_column], color = 'blue', label='Target(Amount of wind in Turbine 9)')
+plt.plot(dataframe_read[furnace_signal_column_a], color = 'red', label = 'Blast Furnace A')
+plt.plot(dataframe_read[furnace_signal_column_b], color = 'green', label = 'Blast Furnace B')
+plt.legend(loc='best')
+#plt.xlim(0,initial_dataframe.shape[0]+10)
+plt.xticks(np.arange(0,dataframe_read.shape[0],5000),rotation='vertical')
+plt.xlabel('Numebr of observation')
+plt.ylabel('Value')
+plt.savefig('only_blast_furnace.png',bbox_inches='tight')
 plt.rcParams['figure.figsize'] = (12,5)
 
 
@@ -225,7 +240,7 @@ plt.legend([target_column], loc='best')
 plt.xticks(np.arange(0,dataframe_drop_string.shape[0],4000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('final_target_column_before_removing_outlier.png',bbox_inches='tight')
+plt.savefig('final_target_column_before_removing_outlier.png',bbox_inches='tight')
 # plt.xlim(0,initial_dataframe.shape[0]+10)
 # plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
@@ -264,7 +279,7 @@ plt.legend([target_column], loc='best')
 plt.xticks(np.arange(0,dataframe_reset_target_column_free_from_outlier.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('final_target_column_after_removing_outlier.png',bbox_inches='tight')
+plt.savefig('final_target_column_after_removing_outlier.png',bbox_inches='tight')
 #plt.xlim(0,initial_dataframe.shape[0]+10)
 #plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
@@ -372,12 +387,13 @@ dataframe_interpolate = dataframe_resample.interpolate('linear')
 dataframe_interpolate_copy = dataframe_interpolate.copy()
 dataframe_interpolate_copy = dataframe_interpolate_copy.reset_index()
 
-plt.plot(dataframe_resample_copy[target_column])
-plt.legend([target_column], loc='best')
-plt.xticks(np.arange(0,dataframe_resample_copy.shape[0],5000),rotation='vertical')
+plt.plot(dataframe_interpolate_copy[target_column], label='Target(Amount of wind in Turbine 9)')
+#plt.legend([target_column], loc='best')
+plt.legend(loc='best')
+plt.xticks(np.arange(0,dataframe_interpolate_copy.shape[0],5000),rotation='vertical')
 plt.xlabel('Numebr of observation')
 plt.ylabel('Value')
-#plt.savefig('resample.png',bbox_inches='tight')
+plt.savefig('interpolation.png',bbox_inches='tight')
 # plt.xlim(0,initial_dataframe.shape[0]+10)
 # plt.xticks(np.arange(0,initial_dataframe.shape[0],))
 plt.rcParams['figure.figsize'] = (12, 5)
@@ -385,14 +401,48 @@ plt.rcParams['figure.figsize'] = (12, 5)
 print(dataframe_resample.shape)
 print(dataframe_interpolate.shape)
 
+import seaborn as sns
+sns.pairplot(dataframe_interpolate_copy)
+
 
 for i in range (dataframe_interpolate.shape[1]):
     if i == 3:
         break
     else:
         plt.scatter(dataframe_interpolate[dataframe_interpolate.columns[i]], dataframe_interpolate[target_column])
+        plt.xlabel(dataframe_interpolate.columns[i])
+        plt.ylabel(target_column)
+        plt.savefig(dataframe_interpolate.columns[i]+'_vs_'+target_column+'_correlation.jpg')
         plt.show()
         plt.figure()
+        
+
+main_frame.head(2)
+main_correlation.head(2)
+
+p=0
+q=0
+column_number=3
+count = 0
+q = p+1
+for h in range(3):
+#     print('loop num: ',h,'\n')
+    if p !=column_number and q!=column_number:
+        main_frame.iloc[0:100].plot(main_frame.columns[p],main_frame.columns[q])
+        plt.xlabel(main_frame.columns[p])
+        plt.ylabel(main_frame[q])
+        plt.title(main_frame[p]+'_vs_'+main_frame.columns[q])
+#         print('\n')
+#         print('------------count: ',count,' p: ',p,'\t q: ',q)
+        q+=1
+        count+=1
+        if q == column_number:
+            p+=1
+            q=p+1
+#             print('now val of p: ',p,' and q: ',q)
+            if p == column_number-1:
+#                 print('val of p is: ',p)
+                print('finish')
 
 
 
