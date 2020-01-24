@@ -419,13 +419,13 @@ for i in range (dataframe_interpolate.shape[1]):
 
 main_frame.head(2)
 main_correlation.head(2)
-
+len(main_frame.columns)
 p=0
 q=0
-column_number=3
+column_number=6
 count = 0
 q = p+1
-for h in range(3):
+for h in range(16):
 #     print('loop num: ',h,'\n')
     if p !=column_number and q!=column_number:
         main_frame.iloc[0:100].plot(main_frame.columns[p],main_frame.columns[q])
