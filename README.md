@@ -15,6 +15,11 @@ The idea behind the task is to observe reaction of different machine learning mo
 * [LSTM from **Cohla's blog**](http://colah.github.io/posts/2015-08-Understanding-LSTMs/)
 * [LSTM explanation by **Shi Yan**](https://medium.com/mlreview/understanding-lstm-and-its-diagrams-37e2f46f1714)
 
+## Code to execute
+After cloning this epo you have to set the name of the **csv file** where your data is stored.
+Below I have described the purpose of different code
+[In this]
+
 
 <!--- **testing bold**\--->
 <!--- *testing italic*--->
