@@ -5,23 +5,23 @@ This respository contains code to foecast data of numerous sensors. Data cleanin
 ## Data cleaning
 
 
-**testing bold**\
-*testing italic*
-\
-check list
-* Item 1
-* Item 2
-  * Item 2a
-  * Item 2b
+<!--- **testing bold**\--->
+<!--- *testing italic*--->
+<!--- \--->
+<!--- check list--->
+<!--- * Item 1--->
+<!---* Item 2--->
+ <!--- * Item 2a--->
+  <!---* Item 2b--->
 
-ordered list\
-1. Item 1
-1. Item 2
-1. Item 3
-   1. Item 3a
-   1. Item 3b
-      1. Item e
-         1.klkl
+<!---ordered list\--->
+<!---1. Item 1--->
+<!---1. Item 2--->
+<!---1. Item 3--->
+  <!--- 1. Item 3a--->
+   <!---1. Item 3b--->
+     <!--- 1. Item e--->
+        <!--- 1.klkl--->
        
       
       
