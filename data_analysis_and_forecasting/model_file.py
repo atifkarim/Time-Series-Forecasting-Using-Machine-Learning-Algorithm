@@ -177,6 +177,60 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
     plt.savefig(fig_location + '/' + "test_and_pred" + '.jpg',bbox_inches='tight')
 #    plt.show()
     plt.figure()
+    
+    
+    # plot graph by doing 5 minute deiation between actual and predicted output
+    actual_data = range(len(test_output)+5)
+
+#     yhat = predicted_output
+#     y_Conv_Lstm_test = test_output
+
+    plt.plot(predicted_output[0:len(test_output)],color='blue',marker='s', linestyle=':')
+    plt.plot(actual_data[5:],test_output[0:len(test_output)],color='red',marker='^', linestyle='-.')
+# plt.plot(yhat[51:99],color='black',marker='s', linestyle=':')
+    plt.title('deviation between predicted and target value')
+    plt.ylabel('value')
+    plt.xlabel('interval of minutes')
+    plt.legend(['predicted','actual_output'], loc='best')
+    plt.grid(b=None, which='both', axis='both')
+    plt.xticks(np.arange(0,len(test_output)+5,10))
+    plt.xticks( rotation=25)
+    plt.rcParams['figure.figsize'] =(12,5)
+    plt.savefig(fig_location + '/' + "5_min_deviation_between_predicted_and_actual_output" + '.jpg',bbox_inches='tight')
+# plt.show()
+    plt.figure()
+    
+    
+    # plot sactter plot along with actual and predicted output
+    
+    plt.subplot(3,1,1)
+    plt.plot(predicted_output[0:len(predicted_output)], test_output[0:len(test_output)], 'bo')
+    plt.ylabel('value')
+    plt.xticks(np.arange(min(test_output[0:len(test_output)]),max(test_output[0:len(test_output)]),1))
+# plt.yticks(np.arange(min(yhat[0:60]),max(yhat[0:60]),1))
+    plt.grid(b=None, which='both', axis='both')
+    plt.title('actual vs predicted')
+# plt.xlim(min(y_conv_LSTM_test), max(y_conv_LSTM_test))
+# plt.ylim(min(yhat), max(yhat))
+# plt.tick_params(labelsize=10)
+
+    plt.subplot(3,1,2)
+    plt.plot(predicted_output[0:len(predicted_output)])
+    plt.ylabel('value')
+    plt.grid(b=None, which='both', axis='both')
+    plt.title('predicted curve')
+# plt.tick_params(labelsize=10)
+
+    plt.subplot(3,1,3)
+    plt.plot(test_output[0:len(test_output)])
+    plt.ylabel('value')
+    plt.xlabel('range')
+    plt.grid(b=None, which='both', axis='both')
+    plt.title('actual curve')
+# plt.tick_params(labelsize=10)
+    plt.rcParams['figure.figsize'] =(12,5)
+    plt.savefig(fig_location + '/' + "data_concentration_plot_along_predicted_and_actual_output" + '.jpg',bbox_inches='tight')
+# plt.show()
 
 
 def evaluation_metrices(test_output,predicted_output,final_directory,model_name,evaluation_metrics_file_path):
