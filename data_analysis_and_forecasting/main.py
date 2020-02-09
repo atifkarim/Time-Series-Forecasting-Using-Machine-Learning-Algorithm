@@ -121,6 +121,9 @@ dataframe_sliced = dataframe_read.iloc[:][cols_list]  #this is done here due to 
                                                         #highly correlated with the target variable. This highly correlatd info got from the training or first stage of coding.
                                                         # finding high correlation part is also given later. just uncomment that part to use.
 
+dataframe_with_date = create_dateTime(dataframe_read,'row_ID','Unnamed: 0') # if you don't want to use cols_list and have much computational power
+                                                                            # and time then uncomment this line and comment out previous and the following line
+
 dataframe_with_date = create_dateTime(dataframe_sliced,'row_ID','Unnamed: 0') # here row ID and unnamed have written beacuse slicing the main datfarame got from the IAT department generated
                                                                 # this columns.
 dataframe_include_month, month_array_df = create_month(dataframe_with_date, 'month', target_column) #this code generate month value in numeric order by taing value from dateTime column
