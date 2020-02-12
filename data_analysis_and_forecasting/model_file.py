@@ -230,6 +230,8 @@ def plot_graph(test_output, predicted_output, final_directory,subfolder):
 # plt.tick_params(labelsize=10)
     plt.rcParams['figure.figsize'] =(12,5)
     plt.savefig(fig_location + '/' + "data_concentration_plot_along_predicted_and_actual_output" + '.jpg',bbox_inches='tight')
+    
+    plt.figure()
 # plt.show()
 
 
