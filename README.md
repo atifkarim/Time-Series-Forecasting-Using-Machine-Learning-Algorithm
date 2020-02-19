@@ -14,6 +14,7 @@ The idea behind the task is to observe reaction of different machine learning mo
 * [TIme series analysis by **Duke**](https://people.duke.edu/~rnau/411arim3.htm)
 * [LSTM from **Cohla's blog**](http://colah.github.io/posts/2015-08-Understanding-LSTMs/)
 * [LSTM explanation by **Shi Yan**](https://medium.com/mlreview/understanding-lstm-and-its-diagrams-37e2f46f1714)
+* [LSTM explanation by Michael Nguyen](https://towardsdatascience.com/illustrated-guide-to-lstms-and-gru-s-a-step-by-step-explanation-44e9eb85bf21)
 
 ## Code to execute
 After cloning this epo you have to set the name of the **csv file** where your data is stored.
