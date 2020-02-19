@@ -28,3 +28,5 @@ data_analysis_and_forecasting/creating_test_set.ipynb
 *.jpg
 *.png
 *.h5
+
+data_prediction_of_PowerPlant
