@@ -21,6 +21,7 @@ The idea behind the task is to observe reaction of different machine learning mo
 * In [main.py](https://github.com/atifkarim/Time-Series-Forecasting-Using-Machine-Learning-Algorithm/blob/master/data_analysis_and_forecasting/main.py#L117) replace the variable name. If this line is not found just try to find **dataframe read** variable name and use that to read your **csv file**
 * This file is used for [data preprocessing](https://github.com/atifkarim/Time-Series-Forecasting-Using-Machine-Learning-Algorithm/blob/master/data_analysis_and_forecasting/dataset_analysis.py)
 * All of the machine learning model is demonstrated [here](https://github.com/atifkarim/Time-Series-Forecasting-Using-Machine-Learning-Algorithm/blob/master/data_analysis_and_forecasting/model_file.py)
+* To run code in your favourite IDE/ terminal execute **python main.py**
 
 <!--- **testing bold**\--->
 <!--- *testing italic*--->
