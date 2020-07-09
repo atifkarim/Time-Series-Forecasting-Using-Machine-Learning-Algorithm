@@ -17,10 +17,10 @@ The idea behind the task is to observe reaction of different machine learning mo
 * [LSTM explanation by Michael Nguyen](https://towardsdatascience.com/illustrated-guide-to-lstms-and-gru-s-a-step-by-step-explanation-44e9eb85bf21)
 
 ## Code to execute
-After cloning this epo you have to set the name of the **csv file** where your data is stored.
-Below I have described the purpose of different code
-[In this]
-
+* After cloning this repository you have to set the name of the **csv file** where your data is stored. For doing this just take a look in this [configuration file](https://github.com/atifkarim/Time-Series-Forecasting-Using-Machine-Learning-Algorithm/blob/master/data_analysis_and_forecasting/variable_config.json)
+* In [main.py](https://github.com/atifkarim/Time-Series-Forecasting-Using-Machine-Learning-Algorithm/blob/master/data_analysis_and_forecasting/main.py#L117) replace the variable name. If this line is not found just try to find **dataframe read** variable name and use that to read your **csv file**
+* This file is used for [data preprocessing](https://github.com/atifkarim/Time-Series-Forecasting-Using-Machine-Learning-Algorithm/blob/master/data_analysis_and_forecasting/dataset_analysis.py)
+* All of the machine learning model is demonstrated [here](https://github.com/atifkarim/Time-Series-Forecasting-Using-Machine-Learning-Algorithm/blob/master/data_analysis_and_forecasting/model_file.py)
 
 <!--- **testing bold**\--->
 <!--- *testing italic*--->
