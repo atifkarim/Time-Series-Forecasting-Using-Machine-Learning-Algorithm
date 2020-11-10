@@ -1,22 +1,22 @@
 [
     {
-        "country": 0, 
-        "wins": 0
+        "y_axis": 0, 
+        "x_axis": 0
     }, 
     {
-        "country": 2, 
-        "wins": -8
+        "y_axis": -8, 
+        "x_axis": 2
     }, 
     {
-        "country": 4, 
-        "wins": -6
+        "y_axis": -6, 
+        "x_axis": 4
     }, 
     {
-        "country": 6, 
-        "wins": -8
+        "y_axis": -8, 
+        "x_axis": 6
     }, 
     {
-        "country": 8, 
-        "wins": -12
+        "y_axis": -12, 
+        "x_axis": 8
     }
 ]
