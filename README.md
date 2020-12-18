@@ -3,10 +3,9 @@
 This respository contains code to foecast data of numerous sensors. Data cleaning and prediction task is done step by step to perform the whole work. In [develop](https://github.com/atifkarim/Time-Series-Forecasting-of-a-Power-Plant/tree/develop) branch all of the code will be found.
 
 ## Requirements
-Python 3.6
-Code is tested on Ubuntu 16.04, 18.04, Windows 10  
-Use [requirements.txt](https://github.com/atifkarim/Time-Series-Forecasting-Using-Machine-Learning-Algorithm/blob/master/requirements.txt) file to install necessary library for this project ny using ```pip install -r requirements.txt``` command in the terminal.  
-To make this **requirements.txt** file I have used the information from [this repository](https://github.com/bndr/pipreqs).
+* Python 3.6
+* Code is tested on Ubuntu 16.04, 18.04, Windows 10  
+* Use [requirements.txt](https://github.com/atifkarim/Time-Series-Forecasting-Using-Machine-Learning-Algorithm/blob/master/requirements.txt) file to install necessary library for this project by using ```pip install -r requirements.txt``` command in the terminal. [To make this requirements.txt file I have used the information from this repository](https://github.com/bndr/pipreqs).
 
 ## Idea
 The idea behind the task is to observe reaction of different machine learning models to the provided data from Salzgitter AG, a reputed steel industry of Germany. Provided data contains information regarding the integrated power plant of Salzgitter AG. Here, I have tried to forecast Turbine data for each minute. Provided data is in time-series format. Initially, all of the raw data is cleaned and visualized using Pandas, NumPy etc. Then, stationarity of time series is checked by ADF test. ARIMA, Linear regression, Decision Tree Regression, Neural Network, Long Short Term Memory(LSTM) are used to do the forecasting.
